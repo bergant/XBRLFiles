@@ -129,6 +129,7 @@ pres_df_num %>%
   select(elementId, contains("2013"), contains("2012")) %>%
   pandoc.table(
     style = "rmarkdown",
+    split.table = 200,
     justify = c("left", "right", "right"))
 
 ```
@@ -171,7 +172,7 @@ pandoc.table(
   balance_sheet_pretty[,1:3],
   style = "rmarkdown",
   justify = c("left", "right", "right"),
-  decimal.mark = ',',
+  split.table = 200,
   emphasize.strong.rows = which(!is.na(balance_sheet_pretty$calcRoleId)))
 
 

@@ -157,92 +157,50 @@ pres_df_num %>%
   select(elementId, contains("2013"), contains("2012")) %>%
   pandoc.table(
     style = "rmarkdown",
+    split.table = 200,
     justify = c("left", "right", "right"))
 ```
 
 
 
-| elementId                                                                      |
-|:-------------------------------------------------------------------------------|
-| us-gaap_CashAndCashEquivalentsAtCarryingValue                                  |
-| us-gaap_OtherShortTermInvestments                                              |
-| us-gaap_CashCashEquivalentsAndShortTermInvestments                             |
-| us-gaap_MarketableSecuritiesCurrent                                            |
-| us-gaap_AccountsReceivableNetCurrent                                           |
-| us-gaap_InventoryNet                                                           |
-| us-gaap_PrepaidExpenseAndOtherAssetsCurrent                                    |
-| us-gaap_AssetsHeldForSaleCurrent                                               |
-| us-gaap_AssetsCurrent                                                          |
-| us-gaap_EquityMethodInvestments                                                |
-| ko_AvailableForSaleSecuritiesAndCostMethodInvestments                          |
-| us-gaap_OtherAssetsNoncurrent                                                  |
-| us-gaap_PropertyPlantAndEquipmentNet                                           |
-| us-gaap_IndefiniteLivedTrademarks                                              |
-| us-gaap_IndefiniteLivedFranchiseRights                                         |
-| us-gaap_Goodwill                                                               |
-| ko_OtherIndefiniteLivedAndFiniteLivedIntangibleAssets                          |
-| us-gaap_Assets                                                                 |
-| us-gaap_AccountsPayableAndAccruedLiabilitiesCurrent                            |
-| ko_LoansAndNotesPayable                                                        |
-| us-gaap_LongTermDebtCurrent                                                    |
-| us-gaap_AccruedIncomeTaxesCurrent                                              |
-| ko_LiabilitiesHeldForSaleAtCarryingValue                                       |
-| us-gaap_LiabilitiesCurrent                                                     |
-| us-gaap_LongTermDebtNoncurrent                                                 |
-| us-gaap_OtherLiabilitiesNoncurrent                                             |
-| us-gaap_DeferredTaxLiabilitiesNoncurrent                                       |
-| us-gaap_CommonStockValue                                                       |
-| us-gaap_AdditionalPaidInCapitalCommonStock                                     |
-| us-gaap_RetainedEarningsAccumulatedDeficit                                     |
-| us-gaap_AccumulatedOtherComprehensiveIncomeLossNetOfTax                        |
-| us-gaap_TreasuryStockValue                                                     |
-| us-gaap_StockholdersEquity                                                     |
-| us-gaap_MinorityInterest                                                       |
-| us-gaap_StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest |
-| us-gaap_LiabilitiesAndStockholdersEquity                                       |
-
-Table: Table continues below
-
- 
-
-|   2013-12-31 |   2012-12-31 |
-|-------------:|-------------:|
-|        10414 |         8442 |
-|         6707 |         5017 |
-|        17121 |        13459 |
-|         3147 |         3092 |
-|         4873 |         4759 |
-|         3277 |         3264 |
-|         2886 |         2781 |
-|            0 |         2973 |
-|        31304 |        30328 |
-|        10393 |         9216 |
-|         1119 |         1232 |
-|         4661 |         3585 |
-|        14967 |        14476 |
-|         6744 |         6527 |
-|         7415 |         7405 |
-|        12312 |        12255 |
-|         1140 |         1150 |
-|        90055 |        86174 |
-|         9577 |         8680 |
-|        16901 |        16297 |
-|         1024 |         1577 |
-|          309 |          471 |
-|            0 |          796 |
-|        27811 |        27821 |
-|        19154 |        14736 |
-|         3498 |         5468 |
-|         6152 |         4981 |
-|         1760 |         1760 |
-|        12276 |        11379 |
-|        61660 |        58045 |
-|        -3432 |        -3385 |
-|        39091 |        35009 |
-|        33173 |        32790 |
-|          267 |          378 |
-|        33440 |        33168 |
-|        90055 |        86174 |
+| elementId                                                                      |   2013-12-31 |   2012-12-31 |
+|:-------------------------------------------------------------------------------|-------------:|-------------:|
+| us-gaap_CashAndCashEquivalentsAtCarryingValue                                  |        10414 |         8442 |
+| us-gaap_OtherShortTermInvestments                                              |         6707 |         5017 |
+| us-gaap_CashCashEquivalentsAndShortTermInvestments                             |        17121 |        13459 |
+| us-gaap_MarketableSecuritiesCurrent                                            |         3147 |         3092 |
+| us-gaap_AccountsReceivableNetCurrent                                           |         4873 |         4759 |
+| us-gaap_InventoryNet                                                           |         3277 |         3264 |
+| us-gaap_PrepaidExpenseAndOtherAssetsCurrent                                    |         2886 |         2781 |
+| us-gaap_AssetsHeldForSaleCurrent                                               |            0 |         2973 |
+| us-gaap_AssetsCurrent                                                          |        31304 |        30328 |
+| us-gaap_EquityMethodInvestments                                                |        10393 |         9216 |
+| ko_AvailableForSaleSecuritiesAndCostMethodInvestments                          |         1119 |         1232 |
+| us-gaap_OtherAssetsNoncurrent                                                  |         4661 |         3585 |
+| us-gaap_PropertyPlantAndEquipmentNet                                           |        14967 |        14476 |
+| us-gaap_IndefiniteLivedTrademarks                                              |         6744 |         6527 |
+| us-gaap_IndefiniteLivedFranchiseRights                                         |         7415 |         7405 |
+| us-gaap_Goodwill                                                               |        12312 |        12255 |
+| ko_OtherIndefiniteLivedAndFiniteLivedIntangibleAssets                          |         1140 |         1150 |
+| us-gaap_Assets                                                                 |        90055 |        86174 |
+| us-gaap_AccountsPayableAndAccruedLiabilitiesCurrent                            |         9577 |         8680 |
+| ko_LoansAndNotesPayable                                                        |        16901 |        16297 |
+| us-gaap_LongTermDebtCurrent                                                    |         1024 |         1577 |
+| us-gaap_AccruedIncomeTaxesCurrent                                              |          309 |          471 |
+| ko_LiabilitiesHeldForSaleAtCarryingValue                                       |            0 |          796 |
+| us-gaap_LiabilitiesCurrent                                                     |        27811 |        27821 |
+| us-gaap_LongTermDebtNoncurrent                                                 |        19154 |        14736 |
+| us-gaap_OtherLiabilitiesNoncurrent                                             |         3498 |         5468 |
+| us-gaap_DeferredTaxLiabilitiesNoncurrent                                       |         6152 |         4981 |
+| us-gaap_CommonStockValue                                                       |         1760 |         1760 |
+| us-gaap_AdditionalPaidInCapitalCommonStock                                     |        12276 |        11379 |
+| us-gaap_RetainedEarningsAccumulatedDeficit                                     |        61660 |        58045 |
+| us-gaap_AccumulatedOtherComprehensiveIncomeLossNetOfTax                        |        -3432 |        -3385 |
+| us-gaap_TreasuryStockValue                                                     |        39091 |        35009 |
+| us-gaap_StockholdersEquity                                                     |        33173 |        32790 |
+| us-gaap_MinorityInterest                                                       |          267 |          378 |
+| us-gaap_StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest |        33440 |        33168 |
+| us-gaap_LiabilitiesAndStockholdersEquity                                       |        90055 |        86174 |
 
 ## Labels
 
@@ -283,90 +241,47 @@ pandoc.table(
   balance_sheet_pretty[,1:3],
   style = "rmarkdown",
   justify = c("left", "right", "right"),
-  decimal.mark = ',',
+  split.table = 200,
   emphasize.strong.rows = which(!is.na(balance_sheet_pretty$calcRoleId)))
 ```
 
 
 
-| CONDENSED CONSOLIDATED BALANCE SHEETS (mio USD $)                                                            |
-|:-------------------------------------------------------------------------------------------------------------|
-| Cash and cash equivalents                                                                                    |
-| Short-term investments                                                                                       |
-| **TOTAL CASH, CASH EQUIVALENTS AND SHORT-TERM INVESTMENTS**                                                  |
-| Marketable securities                                                                                        |
-| Trade accounts receivable, less allowances of $61 and $53, respectively                                      |
-| Inventories                                                                                                  |
-| Prepaid expenses and other assets                                                                            |
-| Assets held for sale                                                                                         |
-| **TOTAL CURRENT ASSETS**                                                                                     |
-| EQUITY METHOD INVESTMENTS                                                                                    |
-| OTHER INVESTMENTS, PRINCIPALLY BOTTLING COMPANIES                                                            |
-| OTHER ASSETS                                                                                                 |
-| PROPERTY, PLANT AND EQUIPMENT - net                                                                          |
-| TRADEMARKS WITH INDEFINITE LIVES                                                                             |
-| BOTTLERS' FRANCHISE RIGHTS WITH INDEFINITE LIVES                                                             |
-| GOODWILL                                                                                                     |
-| OTHER INTANGIBLE ASSETS                                                                                      |
-| **TOTAL ASSETS**                                                                                             |
-| Accounts payable and accrued expenses                                                                        |
-| Loans and notes payable                                                                                      |
-| Current maturities of long-term debt                                                                         |
-| Accrued income taxes                                                                                         |
-| Liabilities held for sale                                                                                    |
-| **TOTAL CURRENT LIABILITIES**                                                                                |
-| LONG-TERM DEBT                                                                                               |
-| OTHER LIABILITIES                                                                                            |
-| DEFERRED INCOME TAXES                                                                                        |
-| Common stock, $0.25 par value; Authorized â€” 11,200 shares; Issued â€” 7,040 and 7,040 shares, respectively |
-| Capital surplus                                                                                              |
-| Reinvested earnings                                                                                          |
-| Accumulated other comprehensive income (loss)                                                                |
-| Treasury stock, at cost â€” 2,638 and 2,571 shares, respectively                                             |
-| **EQUITY ATTRIBUTABLE TO SHAREOWNERS OF THE COCA-COLA COMPANY**                                              |
-| EQUITY ATTRIBUTABLE TO NONCONTROLLING INTERESTS                                                              |
-| **TOTAL EQUITY**                                                                                             |
-| **TOTAL LIABILITIES AND EQUITY**                                                                             |
-
-Table: Table continues below
-
- 
-
-|   2013-12-31 |   2012-12-31 |
-|-------------:|-------------:|
-|        10414 |         8442 |
-|         6707 |         5017 |
-|    **17121** |    **13459** |
-|         3147 |         3092 |
-|         4873 |         4759 |
-|         3277 |         3264 |
-|         2886 |         2781 |
-|            0 |         2973 |
-|    **31304** |    **30328** |
-|        10393 |         9216 |
-|         1119 |         1232 |
-|         4661 |         3585 |
-|        14967 |        14476 |
-|         6744 |         6527 |
-|         7415 |         7405 |
-|        12312 |        12255 |
-|         1140 |         1150 |
-|    **90055** |    **86174** |
-|         9577 |         8680 |
-|        16901 |        16297 |
-|         1024 |         1577 |
-|          309 |          471 |
-|            0 |          796 |
-|    **27811** |    **27821** |
-|        19154 |        14736 |
-|         3498 |         5468 |
-|         6152 |         4981 |
-|         1760 |         1760 |
-|        12276 |        11379 |
-|        61660 |        58045 |
-|        -3432 |        -3385 |
-|        39091 |        35009 |
-|    **33173** |    **32790** |
-|          267 |          378 |
-|    **33440** |    **33168** |
-|    **90055** |    **86174** |
+| CONDENSED CONSOLIDATED BALANCE SHEETS (mio USD $)                                                            |   2013-12-31 |   2012-12-31 |
+|:-------------------------------------------------------------------------------------------------------------|-------------:|-------------:|
+| Cash and cash equivalents                                                                                    |        10414 |         8442 |
+| Short-term investments                                                                                       |         6707 |         5017 |
+| **TOTAL CASH, CASH EQUIVALENTS AND SHORT-TERM INVESTMENTS**                                                  |    **17121** |    **13459** |
+| Marketable securities                                                                                        |         3147 |         3092 |
+| Trade accounts receivable, less allowances of $61 and $53, respectively                                      |         4873 |         4759 |
+| Inventories                                                                                                  |         3277 |         3264 |
+| Prepaid expenses and other assets                                                                            |         2886 |         2781 |
+| Assets held for sale                                                                                         |            0 |         2973 |
+| **TOTAL CURRENT ASSETS**                                                                                     |    **31304** |    **30328** |
+| EQUITY METHOD INVESTMENTS                                                                                    |        10393 |         9216 |
+| OTHER INVESTMENTS, PRINCIPALLY BOTTLING COMPANIES                                                            |         1119 |         1232 |
+| OTHER ASSETS                                                                                                 |         4661 |         3585 |
+| PROPERTY, PLANT AND EQUIPMENT - net                                                                          |        14967 |        14476 |
+| TRADEMARKS WITH INDEFINITE LIVES                                                                             |         6744 |         6527 |
+| BOTTLERS' FRANCHISE RIGHTS WITH INDEFINITE LIVES                                                             |         7415 |         7405 |
+| GOODWILL                                                                                                     |        12312 |        12255 |
+| OTHER INTANGIBLE ASSETS                                                                                      |         1140 |         1150 |
+| **TOTAL ASSETS**                                                                                             |    **90055** |    **86174** |
+| Accounts payable and accrued expenses                                                                        |         9577 |         8680 |
+| Loans and notes payable                                                                                      |        16901 |        16297 |
+| Current maturities of long-term debt                                                                         |         1024 |         1577 |
+| Accrued income taxes                                                                                         |          309 |          471 |
+| Liabilities held for sale                                                                                    |            0 |          796 |
+| **TOTAL CURRENT LIABILITIES**                                                                                |    **27811** |    **27821** |
+| LONG-TERM DEBT                                                                                               |        19154 |        14736 |
+| OTHER LIABILITIES                                                                                            |         3498 |         5468 |
+| DEFERRED INCOME TAXES                                                                                        |         6152 |         4981 |
+| Common stock, $0.25 par value; Authorized â€” 11,200 shares; Issued â€” 7,040 and 7,040 shares, respectively |         1760 |         1760 |
+| Capital surplus                                                                                              |        12276 |        11379 |
+| Reinvested earnings                                                                                          |        61660 |        58045 |
+| Accumulated other comprehensive income (loss)                                                                |        -3432 |        -3385 |
+| Treasury stock, at cost â€” 2,638 and 2,571 shares, respectively                                             |        39091 |        35009 |
+| **EQUITY ATTRIBUTABLE TO SHAREOWNERS OF THE COCA-COLA COMPANY**                                              |    **33173** |    **32790** |
+| EQUITY ATTRIBUTABLE TO NONCONTROLLING INTERESTS                                                              |          267 |          378 |
+| **TOTAL EQUITY**                                                                                             |    **33440** |    **33168** |
+| **TOTAL LIABILITIES AND EQUITY**                                                                             |    **90055** |    **86174** |
