@@ -1,7 +1,6 @@
 # History files
 .Rhistory
-# RStudio project
-.Rproj
+
 
 # Example code in package build process
 *-Ex.R
@@ -56,3 +55,4 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 .Rproj.user
+*.Rproj
