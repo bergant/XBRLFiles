@@ -17,11 +17,10 @@ It extracts xbrl instance and related schema files to a list of data frames.
 ```r
 library(XBRL)
 
-inst <- "~/R/XBRLTest/Data/edgar/ko-20131231.xml"
-#inst <- "http://edgar.sec.gov/Archives/edgar/data/21344/000002134414000008/ko-20131231.xml"
-#options(stringsAsFactors = FALSE)
-#xbrl.vars <- xbrlDoAll(inst, cache.dir = "XBRLcache", prefix.out = NULL)
-load("~/R/XBRLTest/xbrl.vars_cocacola.RData")
+inst <- "http://edgar.sec.gov/Archives/edgar/data/21344/000002134414000008/ko-20131231.xml"
+options(stringsAsFactors = FALSE)
+xbrl.vars <- xbrlDoAll(inst, cache.dir = "XBRLcache", prefix.out = NULL)
+
 str(xbrl.vars, max.level = 1)
 ```
 
