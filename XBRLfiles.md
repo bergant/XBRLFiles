@@ -42,6 +42,7 @@ str(xbrl.vars, max.level = 1)
 
 # Reading XBRL data frames
 The data structure of the data frames is shown in the image below 
+
 ![XBRL tables](img/XBRLdiagram.png)
 
 A simple approach to explore the data in interrelated tables is by using [dplyr](http://cran.r-project.org/web/packages/dplyr) package. 
@@ -149,51 +150,99 @@ pres_df_num <-
   spread(endDate, fact ) %>%
   arrange(elOrder)
 
+
+library(pander)
+
 pres_df_num %>% 
-  select(elementId, contains("20"), contains("2012")) %>%
-  knitr::kable(align = c("l", "r", "r"))
+  select(elementId, contains("2013"), contains("2012")) %>%
+  pandoc.table(
+    style = "rmarkdown",
+    justify = c("left", "right", "right"))
 ```
 
 
 
-elementId                                                                         2010-12-31   2011-12-31  2012-12-31    2013-12-31
--------------------------------------------------------------------------------  -----------  -----------  -----------  -----------
-us-gaap_CashAndCashEquivalentsAtCarryingValue                                           8517        12803  8442               10414
-us-gaap_OtherShortTermInvestments                                                         NA           NA  5017                6707
-us-gaap_CashCashEquivalentsAndShortTermInvestments                                        NA           NA  13459              17121
-us-gaap_MarketableSecuritiesCurrent                                                       NA           NA  3092                3147
-us-gaap_AccountsReceivableNetCurrent                                                      NA           NA  4759                4873
-us-gaap_InventoryNet                                                                      NA           NA  3264                3277
-us-gaap_PrepaidExpenseAndOtherAssetsCurrent                                               NA           NA  2781                2886
-us-gaap_AssetsHeldForSaleCurrent                                                          NA           NA  2973                   0
-us-gaap_AssetsCurrent                                                                     NA           NA  30328              31304
-us-gaap_EquityMethodInvestments                                                           NA           NA  9216               10393
-ko_AvailableForSaleSecuritiesAndCostMethodInvestments                                     NA           NA  1232                1119
-us-gaap_OtherAssetsNoncurrent                                                             NA           NA  3585                4661
-us-gaap_PropertyPlantAndEquipmentNet                                                      NA        14939  14476              14967
-us-gaap_IndefiniteLivedTrademarks                                                         NA           NA  6527                6744
-us-gaap_IndefiniteLivedFranchiseRights                                                    NA           NA  7405                7415
-us-gaap_Goodwill                                                                          NA        12219  12255              12312
-ko_OtherIndefiniteLivedAndFiniteLivedIntangibleAssets                                     NA           NA  1150                1140
-us-gaap_Assets                                                                            NA           NA  86174              90055
-us-gaap_AccountsPayableAndAccruedLiabilitiesCurrent                                       NA           NA  8680                9577
-ko_LoansAndNotesPayable                                                                   NA           NA  16297              16901
-us-gaap_LongTermDebtCurrent                                                               NA           NA  1577                1024
-us-gaap_AccruedIncomeTaxesCurrent                                                         NA           NA  471                  309
-ko_LiabilitiesHeldForSaleAtCarryingValue                                                  NA           NA  796                    0
-us-gaap_LiabilitiesCurrent                                                                NA           NA  27821              27811
-us-gaap_LongTermDebtNoncurrent                                                            NA           NA  14736              19154
-us-gaap_OtherLiabilitiesNoncurrent                                                        NA           NA  5468                3498
-us-gaap_DeferredTaxLiabilitiesNoncurrent                                                  NA           NA  4981                6152
-us-gaap_CommonStockValue                                                                  NA           NA  1760                1760
-us-gaap_AdditionalPaidInCapitalCommonStock                                                NA           NA  11379              12276
-us-gaap_RetainedEarningsAccumulatedDeficit                                                NA           NA  58045              61660
-us-gaap_AccumulatedOtherComprehensiveIncomeLossNetOfTax                                   NA           NA  -3385              -3432
-us-gaap_TreasuryStockValue                                                                NA           NA  35009              39091
-us-gaap_StockholdersEquity                                                                NA           NA  32790              33173
-us-gaap_MinorityInterest                                                                  NA           NA  378                  267
-us-gaap_StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest            NA           NA  33168              33440
-us-gaap_LiabilitiesAndStockholdersEquity                                                  NA           NA  86174              90055
+| elementId                                                                      |
+|:-------------------------------------------------------------------------------|
+| us-gaap_CashAndCashEquivalentsAtCarryingValue                                  |
+| us-gaap_OtherShortTermInvestments                                              |
+| us-gaap_CashCashEquivalentsAndShortTermInvestments                             |
+| us-gaap_MarketableSecuritiesCurrent                                            |
+| us-gaap_AccountsReceivableNetCurrent                                           |
+| us-gaap_InventoryNet                                                           |
+| us-gaap_PrepaidExpenseAndOtherAssetsCurrent                                    |
+| us-gaap_AssetsHeldForSaleCurrent                                               |
+| us-gaap_AssetsCurrent                                                          |
+| us-gaap_EquityMethodInvestments                                                |
+| ko_AvailableForSaleSecuritiesAndCostMethodInvestments                          |
+| us-gaap_OtherAssetsNoncurrent                                                  |
+| us-gaap_PropertyPlantAndEquipmentNet                                           |
+| us-gaap_IndefiniteLivedTrademarks                                              |
+| us-gaap_IndefiniteLivedFranchiseRights                                         |
+| us-gaap_Goodwill                                                               |
+| ko_OtherIndefiniteLivedAndFiniteLivedIntangibleAssets                          |
+| us-gaap_Assets                                                                 |
+| us-gaap_AccountsPayableAndAccruedLiabilitiesCurrent                            |
+| ko_LoansAndNotesPayable                                                        |
+| us-gaap_LongTermDebtCurrent                                                    |
+| us-gaap_AccruedIncomeTaxesCurrent                                              |
+| ko_LiabilitiesHeldForSaleAtCarryingValue                                       |
+| us-gaap_LiabilitiesCurrent                                                     |
+| us-gaap_LongTermDebtNoncurrent                                                 |
+| us-gaap_OtherLiabilitiesNoncurrent                                             |
+| us-gaap_DeferredTaxLiabilitiesNoncurrent                                       |
+| us-gaap_CommonStockValue                                                       |
+| us-gaap_AdditionalPaidInCapitalCommonStock                                     |
+| us-gaap_RetainedEarningsAccumulatedDeficit                                     |
+| us-gaap_AccumulatedOtherComprehensiveIncomeLossNetOfTax                        |
+| us-gaap_TreasuryStockValue                                                     |
+| us-gaap_StockholdersEquity                                                     |
+| us-gaap_MinorityInterest                                                       |
+| us-gaap_StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest |
+| us-gaap_LiabilitiesAndStockholdersEquity                                       |
+
+Table: Table continues below
+
+ 
+
+|   2013-12-31 |   2012-12-31 |
+|-------------:|-------------:|
+|        10414 |         8442 |
+|         6707 |         5017 |
+|        17121 |        13459 |
+|         3147 |         3092 |
+|         4873 |         4759 |
+|         3277 |         3264 |
+|         2886 |         2781 |
+|            0 |         2973 |
+|        31304 |        30328 |
+|        10393 |         9216 |
+|         1119 |         1232 |
+|         4661 |         3585 |
+|        14967 |        14476 |
+|         6744 |         6527 |
+|         7415 |         7405 |
+|        12312 |        12255 |
+|         1140 |         1150 |
+|        90055 |        86174 |
+|         9577 |         8680 |
+|        16901 |        16297 |
+|         1024 |         1577 |
+|          309 |          471 |
+|            0 |          796 |
+|        27811 |        27821 |
+|        19154 |        14736 |
+|         3498 |         5468 |
+|         6152 |         4981 |
+|         1760 |         1760 |
+|        12276 |        11379 |
+|        61660 |        58045 |
+|        -3432 |        -3385 |
+|        39091 |        35009 |
+|        33173 |        32790 |
+|          267 |          378 |
+|        33440 |        33168 |
+|        90055 |        86174 |
 
 ## Labels
 

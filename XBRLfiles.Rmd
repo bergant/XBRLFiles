@@ -109,7 +109,7 @@ str(pres_df, vec.len = 1 )
 ## Adding numbers and contexts
 Elements (or _concepts_ in XBRL terminology) of the balance sheet are now gathered in data frame with presentation hierarchy levels. To see the numbers we have to join the elements with facts and contexts as in the first example.
 
-```{r}
+```{r results='asis'}
 # join concepts with context, facts
 pres_df_num <-
   pres_df %>%
@@ -122,9 +122,15 @@ pres_df_num <-
   spread(endDate, fact ) %>%
   arrange(elOrder)
 
+
+library(pander)
+
 pres_df_num %>% 
-  select(elementId, contains("20"), contains("2012")) %>%
-  knitr::kable(align = c("l", "r", "r"))
+  select(elementId, contains("2013"), contains("2012")) %>%
+  pandoc.table(
+    style = "rmarkdown",
+    justify = c("left", "right", "right"))
+
 ```
 
 ## Labels
