@@ -33,6 +33,7 @@ str(xbrl.vars, max.level = 1)
 
 # Reading XBRL data frames
 The data structure of the data frames is shown in the image below 
+
 ![XBRL tables](img/XBRLdiagram.png)
 
 A simple approach to explore the data in interrelated tables is by using [dplyr](http://cran.r-project.org/web/packages/dplyr) package. 
@@ -51,7 +52,7 @@ xbrl_sales <-
   filter(is.na(dimension1)) %>%
   select(startDate, endDate, amount = fact, currency = unitId, balance)
 
-knitr::kable(xbrl_sales)
+knitr::kable(xbrl_sales, format = "markdown")
 
 ```
 
@@ -162,6 +163,7 @@ names(balance_sheet_pretty)[1] <-
 library(pander)
 pandoc.table(
   balance_sheet_pretty[,1:3],
+  style = "rmarkdown",
   justify = c("left", "right", "right"),
   decimal.mark = ',',
   emphasize.strong.rows = which(!is.na(balance_sheet_pretty$calcRoleId)))

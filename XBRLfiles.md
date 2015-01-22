@@ -41,10 +41,7 @@ str(xbrl.vars, max.level = 1)
 
 
 # Reading XBRL data frames
-The data structure of the data frames is shown in the image below [^footnote].
-
-[^footnote]: Learn more about XBRL entities on https://www.xbrl.org/the-standard/, http://xbrl.fasb.org/, http://www.xbrl.org.uk/ and http://www.ifrs.org/XBRL for specific gaap, uk and ifrs taxonomies.
-
+The data structure of the data frames is shown in the image below 
 ![XBRL tables](img/XBRLdiagram.png)
 
 A simple approach to explore the data in interrelated tables is by using [dplyr](http://cran.r-project.org/web/packages/dplyr) package. 
@@ -64,16 +61,16 @@ xbrl_sales <-
   filter(is.na(dimension1)) %>%
   select(startDate, endDate, amount = fact, currency = unitId, balance)
 
-knitr::kable(xbrl_sales)
+knitr::kable(xbrl_sales, format = "markdown")
 ```
 
 
 
-startDate    endDate      amount        currency   balance 
------------  -----------  ------------  ---------  --------
-2011-01-01   2011-12-31   46542000000   usd        credit  
-2012-01-01   2012-12-31   48017000000   usd        credit  
-2013-01-01   2013-12-31   46854000000   usd        credit  
+|startDate  |endDate    |amount      |currency |balance |
+|:----------|:----------|:-----------|:--------|:-------|
+|2011-01-01 |2011-12-31 |46542000000 |usd      |credit  |
+|2012-01-01 |2012-12-31 |48017000000 |usd      |credit  |
+|2013-01-01 |2013-12-31 |46854000000 |usd      |credit  |
 
 # Presentation: balance sheets example
 ## Presentation hierarchy
@@ -235,105 +232,92 @@ names(balance_sheet_pretty)[1] <-
 library(pander)
 pandoc.table(
   balance_sheet_pretty[,1:3],
+  style = "rmarkdown",
   justify = c("left", "right", "right"),
   decimal.mark = ',',
   emphasize.strong.rows = which(!is.na(balance_sheet_pretty$calcRoleId)))
 ```
 
 
-----------------------------------------------------------
-CONDENSED CONSOLIDATED BALANCE     2013-12-31   2012-12-31
-SHEETS (mio USD $)                                        
--------------------------------- ------------ ------------
-Cash and cash equivalents               10414         8442
 
-Short-term investments                   6707         5017
+| CONDENSED CONSOLIDATED BALANCE SHEETS (mio USD $)                                                            |
+|:-------------------------------------------------------------------------------------------------------------|
+| Cash and cash equivalents                                                                                    |
+| Short-term investments                                                                                       |
+| **TOTAL CASH, CASH EQUIVALENTS AND SHORT-TERM INVESTMENTS**                                                  |
+| Marketable securities                                                                                        |
+| Trade accounts receivable, less allowances of $61 and $53, respectively                                      |
+| Inventories                                                                                                  |
+| Prepaid expenses and other assets                                                                            |
+| Assets held for sale                                                                                         |
+| **TOTAL CURRENT ASSETS**                                                                                     |
+| EQUITY METHOD INVESTMENTS                                                                                    |
+| OTHER INVESTMENTS, PRINCIPALLY BOTTLING COMPANIES                                                            |
+| OTHER ASSETS                                                                                                 |
+| PROPERTY, PLANT AND EQUIPMENT - net                                                                          |
+| TRADEMARKS WITH INDEFINITE LIVES                                                                             |
+| BOTTLERS' FRANCHISE RIGHTS WITH INDEFINITE LIVES                                                             |
+| GOODWILL                                                                                                     |
+| OTHER INTANGIBLE ASSETS                                                                                      |
+| **TOTAL ASSETS**                                                                                             |
+| Accounts payable and accrued expenses                                                                        |
+| Loans and notes payable                                                                                      |
+| Current maturities of long-term debt                                                                         |
+| Accrued income taxes                                                                                         |
+| Liabilities held for sale                                                                                    |
+| **TOTAL CURRENT LIABILITIES**                                                                                |
+| LONG-TERM DEBT                                                                                               |
+| OTHER LIABILITIES                                                                                            |
+| DEFERRED INCOME TAXES                                                                                        |
+| Common stock, $0.25 par value; Authorized â€” 11,200 shares; Issued â€” 7,040 and 7,040 shares, respectively |
+| Capital surplus                                                                                              |
+| Reinvested earnings                                                                                          |
+| Accumulated other comprehensive income (loss)                                                                |
+| Treasury stock, at cost â€” 2,638 and 2,571 shares, respectively                                             |
+| **EQUITY ATTRIBUTABLE TO SHAREOWNERS OF THE COCA-COLA COMPANY**                                              |
+| EQUITY ATTRIBUTABLE TO NONCONTROLLING INTERESTS                                                              |
+| **TOTAL EQUITY**                                                                                             |
+| **TOTAL LIABILITIES AND EQUITY**                                                                             |
 
-**TOTAL CASH, CASH EQUIVALENTS      **17121**    **13459**
-AND SHORT-TERM INVESTMENTS**                              
+Table: Table continues below
 
-Marketable securities                    3147         3092
+ 
 
-Trade accounts receivable,               4873         4759
-less allowances of $61 and                                
-$53, respectively                                         
-
-Inventories                              3277         3264
-
-Prepaid expenses and other               2886         2781
-assets                                                    
-
-Assets held for sale                        0         2973
-
-**TOTAL CURRENT ASSETS**            **31304**    **30328**
-
-EQUITY METHOD INVESTMENTS               10393         9216
-
-OTHER INVESTMENTS, PRINCIPALLY           1119         1232
-BOTTLING COMPANIES                                        
-
-OTHER ASSETS                             4661         3585
-
-PROPERTY, PLANT AND EQUIPMENT           14967        14476
-- net                                                     
-
-TRADEMARKS WITH INDEFINITE               6744         6527
-LIVES                                                     
-
-BOTTLERS' FRANCHISE RIGHTS               7415         7405
-WITH INDEFINITE LIVES                                     
-
-GOODWILL                                12312        12255
-
-OTHER INTANGIBLE ASSETS                  1140         1150
-
-**TOTAL ASSETS**                    **90055**    **86174**
-
-Accounts payable and accrued             9577         8680
-expenses                                                  
-
-Loans and notes payable                 16901        16297
-
-Current maturities of                    1024         1577
-long-term debt                                            
-
-Accrued income taxes                      309          471
-
-Liabilities held for sale                   0          796
-
-**TOTAL CURRENT LIABILITIES**       **27811**    **27821**
-
-LONG-TERM DEBT                          19154        14736
-
-OTHER LIABILITIES                        3498         5468
-
-DEFERRED INCOME TAXES                    6152         4981
-
-Common stock, $0.25 par value;           1760         1760
-Authorized â€” 11,200 shares;                             
-Issued â€” 7,040 and 7,040                                
-shares, respectively                                      
-
-Capital surplus                         12276        11379
-
-Reinvested earnings                     61660        58045
-
-Accumulated other                       -3432        -3385
-comprehensive income (loss)                               
-
-Treasury stock, at cost â€”             39091        35009
-2,638 and 2,571 shares,                                   
-respectively                                              
-
-**EQUITY ATTRIBUTABLE TO            **33173**    **32790**
-SHAREOWNERS OF THE COCA-COLA                              
-COMPANY**                                                 
-
-EQUITY ATTRIBUTABLE TO                    267          378
-NONCONTROLLING INTERESTS                                  
-
-**TOTAL EQUITY**                    **33440**    **33168**
-
-**TOTAL LIABILITIES AND             **90055**    **86174**
-EQUITY**                                                  
-----------------------------------------------------------
+|   2013-12-31 |   2012-12-31 |
+|-------------:|-------------:|
+|        10414 |         8442 |
+|         6707 |         5017 |
+|    **17121** |    **13459** |
+|         3147 |         3092 |
+|         4873 |         4759 |
+|         3277 |         3264 |
+|         2886 |         2781 |
+|            0 |         2973 |
+|    **31304** |    **30328** |
+|        10393 |         9216 |
+|         1119 |         1232 |
+|         4661 |         3585 |
+|        14967 |        14476 |
+|         6744 |         6527 |
+|         7415 |         7405 |
+|        12312 |        12255 |
+|         1140 |         1150 |
+|    **90055** |    **86174** |
+|         9577 |         8680 |
+|        16901 |        16297 |
+|         1024 |         1577 |
+|          309 |          471 |
+|            0 |          796 |
+|    **27811** |    **27821** |
+|        19154 |        14736 |
+|         3498 |         5468 |
+|         6152 |         4981 |
+|         1760 |         1760 |
+|        12276 |        11379 |
+|        61660 |        58045 |
+|        -3432 |        -3385 |
+|        39091 |        35009 |
+|    **33173** |    **32790** |
+|          267 |          378 |
+|    **33440** |    **33168** |
+|    **90055** |    **86174** |
