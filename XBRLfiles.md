@@ -38,7 +38,6 @@ str(xbrl.vars, max.level = 1)
 ##  $ presentation:'data.frame':	1582 obs. of  11 variables:
 ```
 
-
 # Reading XBRL data frames
 The data structure of the data frames is shown in the image below 
 
@@ -73,6 +72,41 @@ knitr::kable(xbrl_sales, format = "markdown")
 |2013-01-01 |2013-12-31 |46854000000 |usd      |credit  |
 
 # Presentation: balance sheets example
+## Find the statement
+XBRL encapsulates several reports. To get the summary 
+
+
+```r
+library(dplyr)
+
+xbrl.vars$role %>%
+  group_by(type) %>%
+  summarize(count=n()) 
+```
+
+```
+## Source: local data frame [3 x 2]
+## 
+##         type count
+## 1 Disclosure    86
+## 2   Document     1
+## 3  Statement     9
+```
+
+To find all statements, filter roles by type:
+
+```r
+xbrl.vars$role %>%
+  filter(type == "Statement", definition == "1003000 - Statement - CONSOLIDATED BALANCE SHEETS") %>%
+  select(roleId) 
+```
+
+```
+##                                                             roleId
+## 1 http://www.thecocacolacompany.com/role/ConsolidatedBalanceSheets
+```
+
+
 ## Presentation hierarchy
 To find out which concepts are reported on specific financial statement component, we have to search the presentation tree from the top element.
 

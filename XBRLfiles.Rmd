@@ -29,7 +29,6 @@ xbrl.vars <- xbrlDoAll(inst, cache.dir = "XBRLcache", prefix.out = NULL)
 str(xbrl.vars, max.level = 1)
 ```
 
-
 # Reading XBRL data frames
 The data structure of the data frames is shown in the image below 
 
@@ -56,10 +55,32 @@ knitr::kable(xbrl_sales, format = "markdown")
 ```
 
 # Presentation: balance sheets example
+## Find the statement
+XBRL encapsulates several reports. To get the summary 
+
+```{r roleid, message=FALSE}
+library(dplyr)
+
+xbrl.vars$role %>%
+  group_by(type) %>%
+  summarize(count=n()) 
+
+```
+
+To find all statements, filter roles by type:
+```{r statement, message=FALSE}
+
+xbrl.vars$role %>%
+  filter(type == "Statement", definition == "1003000 - Statement - CONSOLIDATED BALANCE SHEETS") %>%
+  select(roleId) 
+
+```
+
+
 ## Presentation hierarchy
 To find out which concepts are reported on specific financial statement component, we have to search the presentation tree from the top element.
 
-```{r statement, message=FALSE}
+```{r balance_sheet, message=FALSE}
 
 library(tidyr)
 library(dplyr)
