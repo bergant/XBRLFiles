@@ -56,7 +56,7 @@ knitr::kable(xbrl_sales, format = "markdown")
 
 # Presentation: balance sheets example
 ## Find the statement
-XBRL encapsulates several reports. To get the summary 
+XBRL encapsulates several reports. To get the summary count roles by type:
 
 ```{r roleid, message=FALSE}
 library(dplyr)
@@ -68,12 +68,18 @@ xbrl.vars$role %>%
 ```
 
 To find all statements, filter roles by type:
-```{r statement, message=FALSE}
+```{r all_statements, message=FALSE}
+xbrl.vars$role %>%
+  filter(type == "Statement") %>%
+  select(roleId, definition) 
+```
 
+If interested in a specific statement, search by definition:
+
+```{r statement, message=FALSE}
 xbrl.vars$role %>%
   filter(type == "Statement", definition == "1003000 - Statement - CONSOLIDATED BALANCE SHEETS") %>%
   select(roleId) 
-
 ```
 
 
