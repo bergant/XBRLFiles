@@ -73,7 +73,7 @@ knitr::kable(xbrl_sales, format = "markdown")
 
 # Presentation: balance sheets example
 ## Find the statement
-XBRL encapsulates several reports. To get the summary 
+XBRL encapsulates several reports. To get the summary count roles by type:
 
 
 ```r
@@ -94,6 +94,38 @@ xbrl.vars$role %>%
 ```
 
 To find all statements, filter roles by type:
+
+```r
+xbrl.vars$role %>%
+  filter(type == "Statement") %>%
+  select(roleId, definition) 
+```
+
+```
+##                                                                                           roleId
+## 1                  http://www.thecocacolacompany.com/role/ConsolidatedBalanceSheetParentheticals
+## 2                               http://www.thecocacolacompany.com/role/ConsolidatedBalanceSheets
+## 3                       http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfCashFlows
+## 4             http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfComprehensiveIncome
+## 5        http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfComprehensiveIncomeCalc2
+## 6                          http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfIncome
+## 7                     http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfIncomeCalc2
+## 8               http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfShareownersEquity
+## 9 http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfShareownersEquityParentheticals
+##                                                                              definition
+## 1                     1003500 - Statement - CONSOLIDATED BALANCE SHEET (Parentheticals)
+## 2                                     1003000 - Statement - CONSOLIDATED BALANCE SHEETS
+## 3                           1004000 - Statement - CONSOLIDATED STATEMENTS OF CASH FLOWS
+## 4                 1002000 - Statement - CONSOLIDATED STATEMENTS OF COMPREHENSIVE INCOME
+## 5                 1002000 - Statement - CONSOLIDATED STATEMENTS OF COMPREHENSIVE INCOME
+## 6                               1001000 - Statement - CONSOLIDATED STATEMENTS OF INCOME
+## 7                               1001000 - Statement - CONSOLIDATED STATEMENTS OF INCOME
+## 8                  1005000 - Statement - CONSOLIDATED STATEMENTS OF SHAREOWNERS' EQUITY
+## 9 1005500 - Statement - CONSOLIDATED STATEMENTS OF SHAREOWNERS' EQUITY (Parentheticals)
+```
+
+If interested in a specific statement, search by definition:
+
 
 ```r
 xbrl.vars$role %>%
