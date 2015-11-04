@@ -6,7 +6,7 @@ Saturday, January 17, 2015
 Extensible Business Reporting Language ([XBRL](https://www.xbrl.org/the-standard/what/)) is the open international standard for [digital business reporting](http://xbrl.squarespace.com), managed by a global not for profit consortium, [XBRL International](http://xbrl.org). 
 
 
-#XBRL parser for R
+#XBRL Parser for R
 Parsing XBRL is [not](https://www.xbrl.org/the-standard/how/getting-started-for-developers/) something you could do with your eyes closed.
 Fortunately the [XBRL](http://cran.r-project.org/web/packages/XBRL) package by Roberto Bertolusso and Marek Kimel takes all the pain away.
 
@@ -31,19 +31,23 @@ str(xbrl.vars, max.level = 1)
 ##  $ calculation :'data.frame':	196 obs. of  11 variables:
 ##  $ context     :'data.frame':	740 obs. of  13 variables:
 ##  $ unit        :'data.frame':	4 obs. of  4 variables:
-##  $ fact        :'data.frame':	2745 obs. of  7 variables:
+##  $ fact        :'data.frame':	2745 obs. of  9 variables:
 ##  $ footnote    :'data.frame':	6 obs. of  5 variables:
 ##  $ definition  :'data.frame':	1398 obs. of  11 variables:
 ##  $ label       :'data.frame':	2798 obs. of  5 variables:
 ##  $ presentation:'data.frame':	1582 obs. of  11 variables:
 ```
 
-# Reading XBRL data frames
+# XBRL Data Frames Structure
 The data structure of the data frames is shown in the image below 
 
-![XBRL tables](img/XBRLdiagram.png)
+![XBRL tables](img/xbrl_files.png)
 
-A simple approach to explore the data in interrelated tables is by using [dplyr](http://cran.r-project.org/web/packages/dplyr) package. 
+All values are kept in the `fact` table (in the `fact` field, precisely).
+The `element` table defines _what_ are these values (the XBRL _concepts_, e.g. “assets”, “liabilities”, “net income” etc.).
+The `context` table defines the periods and other dimensions for which the values are reported.
+
+With [dplyr](http://cran.r-project.org/web/packages/dplyr)'s `join` and `filter` it is quite easy to explore the data in interrelated tables. 
 For example, to extract revenue from the sale of goods we have to join *facts* (the numbers) with the 
 *contexts* (periods, dimensions):
 
@@ -52,91 +56,62 @@ For example, to extract revenue from the sale of goods we have to join *facts* (
 ```r
 library(dplyr)
 
-xbrl_sales <-
-  xbrl.vars$element %>%
+xbrl.vars$fact %>%
   filter(elementId == "us-gaap_SalesRevenueGoodsNet") %>%
-  left_join(xbrl.vars$fact, by = "elementId" ) %>%
   left_join(xbrl.vars$context, by = "contextId") %>%
   filter(is.na(dimension1)) %>%
-  select(startDate, endDate, amount = fact, currency = unitId, balance)
-
-knitr::kable(xbrl_sales, format = "markdown")
+  select(startDate, endDate, fact, decimals, unitId, elementId) %>% 
+  (knitr::kable)(format = "markdown")
 ```
 
 
 
-|startDate  |endDate    |amount      |currency |balance |
-|:----------|:----------|:-----------|:--------|:-------|
-|2011-01-01 |2011-12-31 |46542000000 |usd      |credit  |
-|2012-01-01 |2012-12-31 |48017000000 |usd      |credit  |
-|2013-01-01 |2013-12-31 |46854000000 |usd      |credit  |
+|startDate  |endDate    |fact        |decimals |unitId |elementId                    |
+|:----------|:----------|:-----------|:--------|:------|:----------------------------|
+|2011-01-01 |2011-12-31 |46542000000 |-6       |usd    |us-gaap_SalesRevenueGoodsNet |
+|2012-01-01 |2012-12-31 |48017000000 |-6       |usd    |us-gaap_SalesRevenueGoodsNet |
+|2013-01-01 |2013-12-31 |46854000000 |-6       |usd    |us-gaap_SalesRevenueGoodsNet |
 
-# Presentation: balance sheets example
-## Find the statement
-XBRL encapsulates several reports. To get the summary count roles by type:
+# Balance Sheet Example
+## Select Statement
+XBRL encapsulates several reports of different types:
 
 
 ```r
-library(dplyr)
-
-xbrl.vars$role %>%
-  group_by(type) %>%
-  summarize(count=n()) 
+table(xbrl.vars$role$type)
 ```
 
 ```
-## Source: local data frame [3 x 2]
 ## 
-##         type count
-## 1 Disclosure    86
-## 2   Document     1
-## 3  Statement     9
+## Disclosure   Document  Statement 
+##         86          1          9
 ```
 
-To find all statements, filter roles by type:
+To find all _statements_, filter roles by `type`:
 
 ```r
 xbrl.vars$role %>%
   filter(type == "Statement") %>%
-  select(roleId, definition) 
+  mutate(roleId = basename(roleId)) %>% 
+  select(roleId, Statements = definition) %>% 
+  (knitr::kable)(caption = 'Roles with type == "Statement"')
 ```
 
-```
-##                                                                                           roleId
-## 1                  http://www.thecocacolacompany.com/role/ConsolidatedBalanceSheetParentheticals
-## 2                               http://www.thecocacolacompany.com/role/ConsolidatedBalanceSheets
-## 3                       http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfCashFlows
-## 4             http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfComprehensiveIncome
-## 5        http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfComprehensiveIncomeCalc2
-## 6                          http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfIncome
-## 7                     http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfIncomeCalc2
-## 8               http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfShareownersEquity
-## 9 http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfShareownersEquityParentheticals
-##                                                                              definition
-## 1                     1003500 - Statement - CONSOLIDATED BALANCE SHEET (Parentheticals)
-## 2                                     1003000 - Statement - CONSOLIDATED BALANCE SHEETS
-## 3                           1004000 - Statement - CONSOLIDATED STATEMENTS OF CASH FLOWS
-## 4                 1002000 - Statement - CONSOLIDATED STATEMENTS OF COMPREHENSIVE INCOME
-## 5                 1002000 - Statement - CONSOLIDATED STATEMENTS OF COMPREHENSIVE INCOME
-## 6                               1001000 - Statement - CONSOLIDATED STATEMENTS OF INCOME
-## 7                               1001000 - Statement - CONSOLIDATED STATEMENTS OF INCOME
-## 8                  1005000 - Statement - CONSOLIDATED STATEMENTS OF SHAREOWNERS' EQUITY
-## 9 1005500 - Statement - CONSOLIDATED STATEMENTS OF SHAREOWNERS' EQUITY (Parentheticals)
-```
-
-If interested in a specific statement, search by definition:
 
 
-```r
-xbrl.vars$role %>%
-  filter(type == "Statement", definition == "1003000 - Statement - CONSOLIDATED BALANCE SHEETS") %>%
-  select(roleId) 
-```
+Table: Roles with type == "Statement"
 
-```
-##                                                             roleId
-## 1 http://www.thecocacolacompany.com/role/ConsolidatedBalanceSheets
-```
+roleId                                                    Statements                                                                            
+--------------------------------------------------------  --------------------------------------------------------------------------------------
+ConsolidatedBalanceSheetParentheticals                    1003500 - Statement - CONSOLIDATED BALANCE SHEET (Parentheticals)                     
+ConsolidatedBalanceSheets                                 1003000 - Statement - CONSOLIDATED BALANCE SHEETS                                     
+ConsolidatedStatementsOfCashFlows                         1004000 - Statement - CONSOLIDATED STATEMENTS OF CASH FLOWS                           
+ConsolidatedStatementsOfComprehensiveIncome               1002000 - Statement - CONSOLIDATED STATEMENTS OF COMPREHENSIVE INCOME                 
+ConsolidatedStatementsOfComprehensiveIncomeCalc2          1002000 - Statement - CONSOLIDATED STATEMENTS OF COMPREHENSIVE INCOME                 
+ConsolidatedStatementsOfIncome                            1001000 - Statement - CONSOLIDATED STATEMENTS OF INCOME                               
+ConsolidatedStatementsOfIncomeCalc2                       1001000 - Statement - CONSOLIDATED STATEMENTS OF INCOME                               
+ConsolidatedStatementsOfShareownersEquity                 1005000 - Statement - CONSOLIDATED STATEMENTS OF SHAREOWNERS' EQUITY                  
+ConsolidatedStatementsOfShareownersEquityParentheticals   1005500 - Statement - CONSOLIDATED STATEMENTS OF SHAREOWNERS' EQUITY (Parentheticals) 
 
 
 ## Presentation hierarchy
@@ -198,8 +173,8 @@ str(pres_df, vec.len = 1 )
 ##  $ elOrder  : int  1 2 ...
 ```
 
-## Adding numbers and contexts
-Elements (or _concepts_ in XBRL terminology) of the balance sheet are now gathered in data frame with presentation hierarchy levels. To see the numbers we have to join the elements with facts and contexts as in the first example.
+## Amounts and Contexts
+Elements (or _concepts_ in XBRL terminology) of the balance sheet are now gathered in data frame with presentation hierarchy levels. To see the numbers we have to join the elements with numbers from `fact` table and periods from `context` table:
 
 
 ```r
@@ -215,15 +190,14 @@ pres_df_num <-
   spread(endDate, fact ) %>%
   arrange(elOrder)
 
-
 library(pander)
-
 pres_df_num %>% 
   select(elementId, contains("2013"), contains("2012")) %>%
   pandoc.table(
     style = "rmarkdown",
     split.table = 200,
-    justify = c("left", "right", "right"))
+    justify = c("left", "right", "right")
+  )
 ```
 
 
@@ -269,8 +243,7 @@ pres_df_num %>%
 
 ## Labels
 
-Every concept in XBRL may have several labels (short name, description, documentation, etc.) perhaps in several languages. In presentation linkbase there is a hint (`preferredLabel`) which label should be used preferrably.
-Additionally we emphasize the numbers that are computed. We use the relations from calculation linkbase. 
+Every concept in XBRL may have several labels (short name, description, documentation, etc.) perhaps in several languages. In presentation linkbase there is a hint (`preferredLabel`) which label should be used preferrably. Additionally the computed rows are emphasized. 
 
 
 ```r
@@ -300,53 +273,72 @@ balance_sheet_pretty <- pres_df_num %>%
 names(balance_sheet_pretty)[1] <- 
   "CONDENSED CONSOLIDATED BALANCE SHEETS (mio USD $)"
 
+names(balance_sheet_pretty)[2:3] <-
+ format(as.Date(names(balance_sheet_pretty)[2:3]), "%Y")
 # rendering balance sheet
-library(pander)
+
 pandoc.table(
   balance_sheet_pretty[,1:3],
   style = "rmarkdown",
   justify = c("left", "right", "right"),
-  split.table = 200,
-  emphasize.strong.rows = which(!is.na(balance_sheet_pretty$calcRoleId)))
+  split.table = 300,
+  big.mark = ",",
+  emphasize.strong.rows = which(!is.na(balance_sheet_pretty$calcRoleId))
+)
 ```
 
 
 
-| CONDENSED CONSOLIDATED BALANCE SHEETS (mio USD $)                                                            |   2013-12-31 |   2012-12-31 |
-|:-------------------------------------------------------------------------------------------------------------|-------------:|-------------:|
-| Cash and cash equivalents                                                                                    |        10414 |         8442 |
-| Short-term investments                                                                                       |         6707 |         5017 |
-| **TOTAL CASH, CASH EQUIVALENTS AND SHORT-TERM INVESTMENTS**                                                  |    **17121** |    **13459** |
-| Marketable securities                                                                                        |         3147 |         3092 |
-| Trade accounts receivable, less allowances of $61 and $53, respectively                                      |         4873 |         4759 |
-| Inventories                                                                                                  |         3277 |         3264 |
-| Prepaid expenses and other assets                                                                            |         2886 |         2781 |
-| Assets held for sale                                                                                         |            0 |         2973 |
-| **TOTAL CURRENT ASSETS**                                                                                     |    **31304** |    **30328** |
-| EQUITY METHOD INVESTMENTS                                                                                    |        10393 |         9216 |
-| OTHER INVESTMENTS, PRINCIPALLY BOTTLING COMPANIES                                                            |         1119 |         1232 |
-| OTHER ASSETS                                                                                                 |         4661 |         3585 |
-| PROPERTY, PLANT AND EQUIPMENT - net                                                                          |        14967 |        14476 |
-| TRADEMARKS WITH INDEFINITE LIVES                                                                             |         6744 |         6527 |
-| BOTTLERS' FRANCHISE RIGHTS WITH INDEFINITE LIVES                                                             |         7415 |         7405 |
-| GOODWILL                                                                                                     |        12312 |        12255 |
-| OTHER INTANGIBLE ASSETS                                                                                      |         1140 |         1150 |
-| **TOTAL ASSETS**                                                                                             |    **90055** |    **86174** |
-| Accounts payable and accrued expenses                                                                        |         9577 |         8680 |
-| Loans and notes payable                                                                                      |        16901 |        16297 |
-| Current maturities of long-term debt                                                                         |         1024 |         1577 |
-| Accrued income taxes                                                                                         |          309 |          471 |
-| Liabilities held for sale                                                                                    |            0 |          796 |
-| **TOTAL CURRENT LIABILITIES**                                                                                |    **27811** |    **27821** |
-| LONG-TERM DEBT                                                                                               |        19154 |        14736 |
-| OTHER LIABILITIES                                                                                            |         3498 |         5468 |
-| DEFERRED INCOME TAXES                                                                                        |         6152 |         4981 |
-| Common stock, $0.25 par value; Authorized â€” 11,200 shares; Issued â€” 7,040 and 7,040 shares, respectively |         1760 |         1760 |
-| Capital surplus                                                                                              |        12276 |        11379 |
-| Reinvested earnings                                                                                          |        61660 |        58045 |
-| Accumulated other comprehensive income (loss)                                                                |        -3432 |        -3385 |
-| Treasury stock, at cost â€” 2,638 and 2,571 shares, respectively                                             |        39091 |        35009 |
-| **EQUITY ATTRIBUTABLE TO SHAREOWNERS OF THE COCA-COLA COMPANY**                                              |    **33173** |    **32790** |
-| EQUITY ATTRIBUTABLE TO NONCONTROLLING INTERESTS                                                              |          267 |          378 |
-| **TOTAL EQUITY**                                                                                             |    **33440** |    **33168** |
-| **TOTAL LIABILITIES AND EQUITY**                                                                             |    **90055** |    **86174** |
+| CONDENSED CONSOLIDATED BALANCE SHEETS (mio USD $)                                                            |       2013 |       2012 |
+|:-------------------------------------------------------------------------------------------------------------|-----------:|-----------:|
+| Cash and cash equivalents                                                                                    |     10,414 |      8,442 |
+| Short-term investments                                                                                       |      6,707 |      5,017 |
+| **TOTAL CASH, CASH EQUIVALENTS AND SHORT-TERM INVESTMENTS**                                                  | **17,121** | **13,459** |
+| Marketable securities                                                                                        |      3,147 |      3,092 |
+| Trade accounts receivable, less allowances of $61 and $53, respectively                                      |      4,873 |      4,759 |
+| Inventories                                                                                                  |      3,277 |      3,264 |
+| Prepaid expenses and other assets                                                                            |      2,886 |      2,781 |
+| Assets held for sale                                                                                         |          0 |      2,973 |
+| **TOTAL CURRENT ASSETS**                                                                                     | **31,304** | **30,328** |
+| EQUITY METHOD INVESTMENTS                                                                                    |     10,393 |      9,216 |
+| OTHER INVESTMENTS, PRINCIPALLY BOTTLING COMPANIES                                                            |      1,119 |      1,232 |
+| OTHER ASSETS                                                                                                 |      4,661 |      3,585 |
+| PROPERTY, PLANT AND EQUIPMENT - net                                                                          |     14,967 |     14,476 |
+| TRADEMARKS WITH INDEFINITE LIVES                                                                             |      6,744 |      6,527 |
+| BOTTLERS' FRANCHISE RIGHTS WITH INDEFINITE LIVES                                                             |      7,415 |      7,405 |
+| GOODWILL                                                                                                     |     12,312 |     12,255 |
+| OTHER INTANGIBLE ASSETS                                                                                      |      1,140 |      1,150 |
+| **TOTAL ASSETS**                                                                                             | **90,055** | **86,174** |
+| Accounts payable and accrued expenses                                                                        |      9,577 |      8,680 |
+| Loans and notes payable                                                                                      |     16,901 |     16,297 |
+| Current maturities of long-term debt                                                                         |      1,024 |      1,577 |
+| Accrued income taxes                                                                                         |        309 |        471 |
+| Liabilities held for sale                                                                                    |          0 |        796 |
+| **TOTAL CURRENT LIABILITIES**                                                                                | **27,811** | **27,821** |
+| LONG-TERM DEBT                                                                                               |     19,154 |     14,736 |
+| OTHER LIABILITIES                                                                                            |      3,498 |      5,468 |
+| DEFERRED INCOME TAXES                                                                                        |      6,152 |      4,981 |
+| Common stock, $0.25 par value; Authorized â€” 11,200 shares; Issued â€” 7,040 and 7,040 shares, respectively |      1,760 |      1,760 |
+| Capital surplus                                                                                              |     12,276 |     11,379 |
+| Reinvested earnings                                                                                          |     61,660 |     58,045 |
+| Accumulated other comprehensive income (loss)                                                                |     -3,432 |     -3,385 |
+| Treasury stock, at cost â€” 2,638 and 2,571 shares, respectively                                             |     39,091 |     35,009 |
+| **EQUITY ATTRIBUTABLE TO SHAREOWNERS OF THE COCA-COLA COMPANY**                                              | **33,173** | **32,790** |
+| EQUITY ATTRIBUTABLE TO NONCONTROLLING INTERESTS                                                              |        267 |        378 |
+| **TOTAL EQUITY**                                                                                             | **33,440** | **33,168** |
+| **TOTAL LIABILITIES AND EQUITY**                                                                             | **90,055** | **86,174** |
+
+## Related
+
+### [finstr](https://github.com/bergant/finstr) package: financial statements in R
+
+[finstr](https://github.com/bergant/finstr) package includes the
+"data wrangling" functions needed to use the XBRL data 
+and allows user to focus on financial statement analysis.
+
+### [xbrlus](https://github.com/bergant/xbrlus) package: R interface to XBRL US API
+
+XBRL US (http://xbrl.us/) provides
+free access to their database via 
+[XBRL US API](https://github.com/xbrlus/data_analysis_toolkit/).
+Package [xbrlus](https://github.com/bergant/xbrlus) is an R interface to this API.

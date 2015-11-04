@@ -5,21 +5,20 @@ date: "Saturday, January 17, 2015"
 output:
   html_document:
     keep_md: yes
-    number_sections: yes
 ---
 
 #What is XBRL?
 Extensible Business Reporting Language ([XBRL](https://www.xbrl.org/the-standard/what/)) is the open international standard for [digital business reporting](http://xbrl.squarespace.com), managed by a global not for profit consortium, [XBRL International](http://xbrl.org). 
 
 
-#XBRL parser for R
+#XBRL Parser for R
 Parsing XBRL is [not](https://www.xbrl.org/the-standard/how/getting-started-for-developers/) something you could do with your eyes closed.
 Fortunately the [XBRL](http://cran.r-project.org/web/packages/XBRL) package by Roberto Bertolusso and Marek Kimel takes all the pain away.
 
 To parse complete XBRL, use `xbrlDoAll` function. 
 It extracts xbrl instance and related schema files to a list of data frames.
 
-```{r parse, message=FALSE}
+```{r parse, message=FALSE, cache=TRUE}
 library(XBRL)
 
 inst <- "http://edgar.sec.gov/Archives/edgar/data/21344/000002134414000008/ko-20131231.xml"
@@ -29,12 +28,16 @@ xbrl.vars <- xbrlDoAll(inst, cache.dir = "XBRLcache", prefix.out = NULL)
 str(xbrl.vars, max.level = 1)
 ```
 
-# Reading XBRL data frames
+# XBRL Data Frames Structure
 The data structure of the data frames is shown in the image below 
 
-![XBRL tables](img/XBRLdiagram.png)
+![XBRL tables](img/xbrl_files.png)
 
-A simple approach to explore the data in interrelated tables is by using [dplyr](http://cran.r-project.org/web/packages/dplyr) package. 
+All values are kept in the `fact` table (in the `fact` field, precisely).
+The `element` table defines _what_ are these values (the XBRL _concepts_, e.g. “assets”, “liabilities”, “net income” etc.).
+The `context` table defines the periods and other dimensions for which the values are reported.
+
+With [dplyr](http://cran.r-project.org/web/packages/dplyr)'s `join` and `filter` it is quite easy to explore the data in interrelated tables. 
 For example, to extract revenue from the sale of goods we have to join *facts* (the numbers) with the 
 *contexts* (periods, dimensions):
 
@@ -42,44 +45,30 @@ For example, to extract revenue from the sale of goods we have to join *facts* (
 ```{r sales, message=FALSE}
 library(dplyr)
 
-xbrl_sales <-
-  xbrl.vars$element %>%
+xbrl.vars$fact %>%
   filter(elementId == "us-gaap_SalesRevenueGoodsNet") %>%
-  left_join(xbrl.vars$fact, by = "elementId" ) %>%
   left_join(xbrl.vars$context, by = "contextId") %>%
   filter(is.na(dimension1)) %>%
-  select(startDate, endDate, amount = fact, currency = unitId, balance)
-
-knitr::kable(xbrl_sales, format = "markdown")
+  select(startDate, endDate, fact, decimals, unitId, elementId) %>% 
+  (knitr::kable)(format = "markdown")
 
 ```
 
-# Presentation: balance sheets example
-## Find the statement
-XBRL encapsulates several reports. To get the summary count roles by type:
+# Balance Sheet Example
+## Select Statement
+XBRL encapsulates several reports of different types:
 
 ```{r roleid, message=FALSE}
-library(dplyr)
-
-xbrl.vars$role %>%
-  group_by(type) %>%
-  summarize(count=n()) 
-
+table(xbrl.vars$role$type)
 ```
 
-To find all statements, filter roles by type:
+To find all _statements_, filter roles by `type`:
 ```{r all_statements, message=FALSE}
 xbrl.vars$role %>%
   filter(type == "Statement") %>%
-  select(roleId, definition) 
-```
-
-If interested in a specific statement, search by definition:
-
-```{r statement, message=FALSE}
-xbrl.vars$role %>%
-  filter(type == "Statement", definition == "1003000 - Statement - CONSOLIDATED BALANCE SHEETS") %>%
-  select(roleId) 
+  mutate(roleId = basename(roleId)) %>% 
+  select(roleId, Statements = definition) %>% 
+  (knitr::kable)(caption = 'Roles with type == "Statement"')
 ```
 
 
@@ -132,8 +121,8 @@ str(pres_df, vec.len = 1 )
 
 ```
 
-## Adding numbers and contexts
-Elements (or _concepts_ in XBRL terminology) of the balance sheet are now gathered in data frame with presentation hierarchy levels. To see the numbers we have to join the elements with facts and contexts as in the first example.
+## Amounts and Contexts
+Elements (or _concepts_ in XBRL terminology) of the balance sheet are now gathered in data frame with presentation hierarchy levels. To see the numbers we have to join the elements with numbers from `fact` table and periods from `context` table:
 
 ```{r results='asis'}
 # join concepts with context, facts
@@ -148,22 +137,20 @@ pres_df_num <-
   spread(endDate, fact ) %>%
   arrange(elOrder)
 
-
 library(pander)
-
 pres_df_num %>% 
   select(elementId, contains("2013"), contains("2012")) %>%
   pandoc.table(
     style = "rmarkdown",
     split.table = 200,
-    justify = c("left", "right", "right"))
+    justify = c("left", "right", "right")
+  )
 
 ```
 
 ## Labels
 
-Every concept in XBRL may have several labels (short name, description, documentation, etc.) perhaps in several languages. In presentation linkbase there is a hint (`preferredLabel`) which label should be used preferrably.
-Additionally we emphasize the numbers that are computed. We use the relations from calculation linkbase. 
+Every concept in XBRL may have several labels (short name, description, documentation, etc.) perhaps in several languages. In presentation linkbase there is a hint (`preferredLabel`) which label should be used preferrably. Additionally the computed rows are emphasized. 
 
 ```{r results='asis'}
 # labels for our financial statement (role_id) in "en-US" language:
@@ -192,14 +179,32 @@ balance_sheet_pretty <- pres_df_num %>%
 names(balance_sheet_pretty)[1] <- 
   "CONDENSED CONSOLIDATED BALANCE SHEETS (mio USD $)"
 
+names(balance_sheet_pretty)[2:3] <-
+ format(as.Date(names(balance_sheet_pretty)[2:3]), "%Y")
 # rendering balance sheet
-library(pander)
+
 pandoc.table(
   balance_sheet_pretty[,1:3],
   style = "rmarkdown",
   justify = c("left", "right", "right"),
-  split.table = 200,
-  emphasize.strong.rows = which(!is.na(balance_sheet_pretty$calcRoleId)))
-
+  split.table = 300,
+  big.mark = ",",
+  emphasize.strong.rows = which(!is.na(balance_sheet_pretty$calcRoleId))
+)
 
 ```
+
+## Related
+
+### [finstr](https://github.com/bergant/finstr) package: financial statements in R
+
+[finstr](https://github.com/bergant/finstr) package includes the
+"data wrangling" functions needed to use the XBRL data 
+and allows user to focus on financial statement analysis.
+
+### [xbrlus](https://github.com/bergant/xbrlus) package: R interface to XBRL US API
+
+XBRL US (http://xbrl.us/) provides
+free access to their database via 
+[XBRL US API](https://github.com/xbrlus/data_analysis_toolkit/).
+Package [xbrlus](https://github.com/bergant/xbrlus) is an R interface to this API.

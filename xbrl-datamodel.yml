@@ -1,0 +1,108 @@
+# data model segments
+- segment: &relations "XBRL Taxonomy - Relations"
+- segment: &concepts "XBRL Taxonomy - Concepts"
+- segment: &instance "XBRL Instance"
+
+# Tables and columns
+- table: "Role"
+  segment: *relations
+  columns:
+    roleId: {key: yes}
+    order:
+    type:
+    description:
+    definition:
+
+- table: "Definition"
+  segment: *relations
+  columns:
+    roleId: {key: yes, ref: Role}
+    fromElementId: {key: yes, ref: Element}
+    toElementId: {key: yes, ref: Element}
+    arcrole:
+    order:
+    closed:
+    usable:
+    contextElement:
+
+- table: "Calculation"
+  segment: *relations
+  columns:
+    roleId: {key: yes, ref: Role}
+    fromElementId: {key: yes, ref: Element}
+    toElementId: {key: yes, ref: Element}
+    arcrole:
+    order:
+    closed:
+    usable:
+    contextElement:
+
+- table: "Presentation"
+  segment: *relations
+  columns:
+    roleId: {key: yes, ref: Role}
+    fromElementId: {key: yes, ref: Element}
+    toElementId: {key: yes, ref: Element}
+    arcrole:
+    order:
+    closed:
+    usable:
+    contextElement:
+
+- table: "Element"
+  segment: *concepts
+  columns:
+    elementId: {key: yes}
+    type:
+    substitutionGroup:
+    periodType:
+    abstract:
+    balance:
+    nillable:
+
+- table: "Label"
+  segment: *concepts
+  columns:
+    elementId: {key: yes, ref: Element}
+    lang: {key: yes}
+    labelRole: {key: yes}
+    labelString:
+
+- table: "Context"
+  segment: *instance
+  columns:
+    contextId: {key: yes}
+    scheme:
+    identifier:
+    startDate:
+    endDate:
+    dimension:
+    value:
+
+- table: "Fact"
+  segment: *instance
+  columns:
+    factId: {key: yes}
+    elementId: {ref: Element}
+    contextId: {ref: Context}
+    unitId: {ref: Unit}
+    fact:
+    decimals:
+    ns:
+
+- table: "Unit"
+  segment: *instance
+  columns:
+    unitId: {key: yes}
+    measure:
+    unitNumerator:
+    unitDenominator:
+
+- table: "Footnote"
+  segment: *instance
+  columns:
+    factId: {key: yes, ref: Fact}
+    lang: {key: yes}
+    footnoteRole: {key: yes}
+    footnoteString:
+
