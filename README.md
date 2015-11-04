@@ -94,24 +94,23 @@ xbrl.vars$role %>%
   filter(type == "Statement") %>%
   mutate(roleId = basename(roleId)) %>% 
   select(roleId, Statements = definition) %>% 
-  (knitr::kable)(caption = 'Roles with type == "Statement"')
+  (knitr::kable)(caption = 'Roles with type == "Statement"',
+                 format = "markdown")
 ```
 
 
 
-Table: Roles with type == "Statement"
-
-roleId                                                    Statements                                                                            
---------------------------------------------------------  --------------------------------------------------------------------------------------
-ConsolidatedBalanceSheetParentheticals                    1003500 - Statement - CONSOLIDATED BALANCE SHEET (Parentheticals)                     
-ConsolidatedBalanceSheets                                 1003000 - Statement - CONSOLIDATED BALANCE SHEETS                                     
-ConsolidatedStatementsOfCashFlows                         1004000 - Statement - CONSOLIDATED STATEMENTS OF CASH FLOWS                           
-ConsolidatedStatementsOfComprehensiveIncome               1002000 - Statement - CONSOLIDATED STATEMENTS OF COMPREHENSIVE INCOME                 
-ConsolidatedStatementsOfComprehensiveIncomeCalc2          1002000 - Statement - CONSOLIDATED STATEMENTS OF COMPREHENSIVE INCOME                 
-ConsolidatedStatementsOfIncome                            1001000 - Statement - CONSOLIDATED STATEMENTS OF INCOME                               
-ConsolidatedStatementsOfIncomeCalc2                       1001000 - Statement - CONSOLIDATED STATEMENTS OF INCOME                               
-ConsolidatedStatementsOfShareownersEquity                 1005000 - Statement - CONSOLIDATED STATEMENTS OF SHAREOWNERS' EQUITY                  
-ConsolidatedStatementsOfShareownersEquityParentheticals   1005500 - Statement - CONSOLIDATED STATEMENTS OF SHAREOWNERS' EQUITY (Parentheticals) 
+|roleId                                                  |Statements                                                                            |
+|:-------------------------------------------------------|:-------------------------------------------------------------------------------------|
+|ConsolidatedBalanceSheetParentheticals                  |1003500 - Statement - CONSOLIDATED BALANCE SHEET (Parentheticals)                     |
+|ConsolidatedBalanceSheets                               |1003000 - Statement - CONSOLIDATED BALANCE SHEETS                                     |
+|ConsolidatedStatementsOfCashFlows                       |1004000 - Statement - CONSOLIDATED STATEMENTS OF CASH FLOWS                           |
+|ConsolidatedStatementsOfComprehensiveIncome             |1002000 - Statement - CONSOLIDATED STATEMENTS OF COMPREHENSIVE INCOME                 |
+|ConsolidatedStatementsOfComprehensiveIncomeCalc2        |1002000 - Statement - CONSOLIDATED STATEMENTS OF COMPREHENSIVE INCOME                 |
+|ConsolidatedStatementsOfIncome                          |1001000 - Statement - CONSOLIDATED STATEMENTS OF INCOME                               |
+|ConsolidatedStatementsOfIncomeCalc2                     |1001000 - Statement - CONSOLIDATED STATEMENTS OF INCOME                               |
+|ConsolidatedStatementsOfShareownersEquity               |1005000 - Statement - CONSOLIDATED STATEMENTS OF SHAREOWNERS' EQUITY                  |
+|ConsolidatedStatementsOfShareownersEquityParentheticals |1005500 - Statement - CONSOLIDATED STATEMENTS OF SHAREOWNERS' EQUITY (Parentheticals) |
 
 
 ## Presentation hierarchy

@@ -68,7 +68,8 @@ xbrl.vars$role %>%
   filter(type == "Statement") %>%
   mutate(roleId = basename(roleId)) %>% 
   select(roleId, Statements = definition) %>% 
-  (knitr::kable)(caption = 'Roles with type == "Statement"')
+  (knitr::kable)(caption = 'Roles with type == "Statement"',
+                 format = "markdown")
 ```
 
 
