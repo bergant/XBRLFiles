@@ -90,27 +90,70 @@ table(xbrl.vars$role$type)
 To find all _statements_, filter roles by `type`:
 
 ```r
-xbrl.vars$role %>%
-  filter(type == "Statement") %>%
-  mutate(roleId = basename(roleId)) %>% 
-  select(roleId, Statements = definition) %>% 
-  (knitr::kable)(caption = 'Roles with type == "Statement"',
-                 format = "markdown")
+htmlTable::htmlTable(data.frame(Statements=
+  with(
+    xbrl.vars$role[xbrl.vars$role$type=="Statement", ],
+    paste(roleId, "\n<br/>", definition, "\n<p/>")
+  )),
+  align = "l",
+  rnames = FALSE
+)
 ```
 
-
-
-|roleId                                                  |Statements                                                                            |
-|:-------------------------------------------------------|:-------------------------------------------------------------------------------------|
-|ConsolidatedBalanceSheetParentheticals                  |1003500 - Statement - CONSOLIDATED BALANCE SHEET (Parentheticals)                     |
-|ConsolidatedBalanceSheets                               |1003000 - Statement - CONSOLIDATED BALANCE SHEETS                                     |
-|ConsolidatedStatementsOfCashFlows                       |1004000 - Statement - CONSOLIDATED STATEMENTS OF CASH FLOWS                           |
-|ConsolidatedStatementsOfComprehensiveIncome             |1002000 - Statement - CONSOLIDATED STATEMENTS OF COMPREHENSIVE INCOME                 |
-|ConsolidatedStatementsOfComprehensiveIncomeCalc2        |1002000 - Statement - CONSOLIDATED STATEMENTS OF COMPREHENSIVE INCOME                 |
-|ConsolidatedStatementsOfIncome                          |1001000 - Statement - CONSOLIDATED STATEMENTS OF INCOME                               |
-|ConsolidatedStatementsOfIncomeCalc2                     |1001000 - Statement - CONSOLIDATED STATEMENTS OF INCOME                               |
-|ConsolidatedStatementsOfShareownersEquity               |1005000 - Statement - CONSOLIDATED STATEMENTS OF SHAREOWNERS' EQUITY                  |
-|ConsolidatedStatementsOfShareownersEquityParentheticals |1005500 - Statement - CONSOLIDATED STATEMENTS OF SHAREOWNERS' EQUITY (Parentheticals) |
+<table class='gmisc_table' style='border-collapse: collapse;' >
+<thead>
+<tr>
+<th style='border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;'>Statements</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style='text-align: left;'>http://www.thecocacolacompany.com/role/ConsolidatedBalanceSheetParentheticals 
+<br/> 1003500 - Statement - CONSOLIDATED BALANCE SHEET (Parentheticals) 
+<p/></td>
+</tr>
+<tr>
+<td style='text-align: left;'>http://www.thecocacolacompany.com/role/ConsolidatedBalanceSheets 
+<br/> 1003000 - Statement - CONSOLIDATED BALANCE SHEETS 
+<p/></td>
+</tr>
+<tr>
+<td style='text-align: left;'>http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfCashFlows 
+<br/> 1004000 - Statement - CONSOLIDATED STATEMENTS OF CASH FLOWS 
+<p/></td>
+</tr>
+<tr>
+<td style='text-align: left;'>http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfComprehensiveIncome 
+<br/> 1002000 - Statement - CONSOLIDATED STATEMENTS OF COMPREHENSIVE INCOME 
+<p/></td>
+</tr>
+<tr>
+<td style='text-align: left;'>http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfComprehensiveIncomeCalc2 
+<br/> 1002000 - Statement - CONSOLIDATED STATEMENTS OF COMPREHENSIVE INCOME 
+<p/></td>
+</tr>
+<tr>
+<td style='text-align: left;'>http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfIncome 
+<br/> 1001000 - Statement - CONSOLIDATED STATEMENTS OF INCOME 
+<p/></td>
+</tr>
+<tr>
+<td style='text-align: left;'>http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfIncomeCalc2 
+<br/> 1001000 - Statement - CONSOLIDATED STATEMENTS OF INCOME 
+<p/></td>
+</tr>
+<tr>
+<td style='text-align: left;'>http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfShareownersEquity 
+<br/> 1005000 - Statement - CONSOLIDATED STATEMENTS OF SHAREOWNERS' EQUITY 
+<p/></td>
+</tr>
+<tr>
+<td style='border-bottom: 2px solid grey; text-align: left;'>http://www.thecocacolacompany.com/role/ConsolidatedStatementsOfShareownersEquityParentheticals 
+<br/> 1005500 - Statement - CONSOLIDATED STATEMENTS OF SHAREOWNERS' EQUITY (Parentheticals) 
+<p/></td>
+</tr>
+</tbody>
+</table>
 
 
 ## Presentation hierarchy

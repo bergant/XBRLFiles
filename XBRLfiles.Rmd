@@ -63,13 +63,15 @@ table(xbrl.vars$role$type)
 ```
 
 To find all _statements_, filter roles by `type`:
-```{r all_statements, message=FALSE}
-xbrl.vars$role %>%
-  filter(type == "Statement") %>%
-  mutate(roleId = basename(roleId)) %>% 
-  select(roleId, Statements = definition) %>% 
-  (knitr::kable)(caption = 'Roles with type == "Statement"',
-                 format = "markdown")
+```{r all_statements, message=FALSE, results='asis'}
+htmlTable::htmlTable(data.frame(Statements=
+  with(
+    xbrl.vars$role[xbrl.vars$role$type=="Statement", ],
+    paste(roleId, "\n<br/>", definition, "\n<p/>")
+  )),
+  align = "l",
+  rnames = FALSE
+)
 ```
 
 
