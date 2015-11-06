@@ -499,15 +499,15 @@ element StockholdersEquity. In this case the element value should be deducted in
 of added to the total sum, when calculating (or validating) the value of its parent
 concept._
 
-## Related
+# Related
 
-### [finstr](https://github.com/bergant/finstr) package: financial statements in R
+## [finstr](https://github.com/bergant/finstr) package: financial statements in R
 
 [finstr](https://github.com/bergant/finstr) package includes the
 "data wrangling" functions needed to use the XBRL data 
 and allows user to focus on financial statement analysis.
 
-### [xbrlus](https://github.com/bergant/xbrlus) package: R interface to XBRL US API
+## [xbrlus](https://github.com/bergant/xbrlus) package: R interface to XBRL US API
 
 XBRL US (http://xbrl.us/) provides
 free access to their database via 
