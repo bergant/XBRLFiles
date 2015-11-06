@@ -48,8 +48,8 @@ The `element` table defines _what_ are these values (the XBRL _concepts_, e.g. â
 The `context` table defines the periods and other dimensions for which the values are reported.
 
 With [dplyr](http://cran.r-project.org/web/packages/dplyr)'s `join` and `filter` it is quite easy to explore the data in interrelated tables. 
-For example, to extract revenue from the sale of goods we have to join *facts* (the numbers) with the 
-*contexts* (periods, dimensions):
+For example, to extract revenue from the sale of goods we have to join the 
+*facts* (the numbers) with the *context* (periods, dimensions):
 
 
 
@@ -60,17 +60,17 @@ xbrl.vars$fact %>%
   filter(elementId == "us-gaap_SalesRevenueGoodsNet") %>%
   left_join(xbrl.vars$context, by = "contextId") %>%
   filter(is.na(dimension1)) %>%
-  select(startDate, endDate, fact, decimals, unitId, elementId) %>% 
+  select(startDate, endDate, fact, unitId, elementId) %>% 
   (knitr::kable)(format = "markdown")
 ```
 
 
 
-|startDate  |endDate    |fact        |decimals |unitId |elementId                    |
-|:----------|:----------|:-----------|:--------|:------|:----------------------------|
-|2011-01-01 |2011-12-31 |46542000000 |-6       |usd    |us-gaap_SalesRevenueGoodsNet |
-|2012-01-01 |2012-12-31 |48017000000 |-6       |usd    |us-gaap_SalesRevenueGoodsNet |
-|2013-01-01 |2013-12-31 |46854000000 |-6       |usd    |us-gaap_SalesRevenueGoodsNet |
+|startDate  |endDate    |fact        |unitId |elementId                    |
+|:----------|:----------|:-----------|:------|:----------------------------|
+|2011-01-01 |2011-12-31 |46542000000 |usd    |us-gaap_SalesRevenueGoodsNet |
+|2012-01-01 |2012-12-31 |48017000000 |usd    |us-gaap_SalesRevenueGoodsNet |
+|2013-01-01 |2013-12-31 |46854000000 |usd    |us-gaap_SalesRevenueGoodsNet |
 
 # Balance Sheet Example
 ## Select Statement
@@ -445,9 +445,9 @@ elements <-
   )
 
 pandoc.table(
-  elements[, c("Element", "balance", "level", "id")],
+  elements[, c("Element", "balance", "id")],
   style = "rmarkdown",
-  justify = c("left", "left", "left", "left"),
+  justify = c("left", "left", "left"),
   split.table = 300,
   emphasize.strong.rows = which(elements$level == 1)
 )
@@ -455,44 +455,44 @@ pandoc.table(
 
 
 
-| Element                                                                              | balance    | level   | id       |
-|:-------------------------------------------------------------------------------------|:-----------|:--------|:---------|
-| **Assets**                                                                           | **debit**  | **1**   | **01**   |
-| &nbsp;&nbsp; AssetsCurrent                                                           | debit      | 2       | 0101     |
-| &nbsp;&nbsp;&nbsp;&nbsp; CashCashEquivalentsAndShortTermInvestments                  | debit      | 3       | 010101   |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CashAndCashEquivalentsAtCarryingValue           | debit      | 4       | 01010101 |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OtherShortTermInvestments                       | debit      | 4       | 01010102 |
-| &nbsp;&nbsp;&nbsp;&nbsp; MarketableSecuritiesCurrent                                 | debit      | 3       | 010102   |
-| &nbsp;&nbsp;&nbsp;&nbsp; AccountsReceivableNetCurrent                                | debit      | 3       | 010103   |
-| &nbsp;&nbsp;&nbsp;&nbsp; InventoryNet                                                | debit      | 3       | 010104   |
-| &nbsp;&nbsp;&nbsp;&nbsp; PrepaidExpenseAndOtherAssetsCurrent                         | debit      | 3       | 010105   |
-| &nbsp;&nbsp;&nbsp;&nbsp; AssetsHeldForSaleCurrent                                    | debit      | 3       | 010106   |
-| &nbsp;&nbsp; EquityMethodInvestments                                                 | debit      | 2       | 0102     |
-| &nbsp;&nbsp; ko_AvailableForSaleSecuritiesAndCostMethodInvestments                   | debit      | 2       | 0103     |
-| &nbsp;&nbsp; OtherAssetsNoncurrent                                                   | debit      | 2       | 0104     |
-| &nbsp;&nbsp; PropertyPlantAndEquipmentNet                                            | debit      | 2       | 0105     |
-| &nbsp;&nbsp; IndefiniteLivedTrademarks                                               | debit      | 2       | 0106     |
-| &nbsp;&nbsp; IndefiniteLivedFranchiseRights                                          | debit      | 2       | 0107     |
-| &nbsp;&nbsp; Goodwill                                                                | debit      | 2       | 0108     |
-| &nbsp;&nbsp; ko_OtherIndefiniteLivedAndFiniteLivedIntangibleAssets                   | debit      | 2       | 0109     |
-| **LiabilitiesAndStockholdersEquity**                                                 | **credit** | **1**   | **02**   |
-| &nbsp;&nbsp; LiabilitiesCurrent                                                      | credit     | 2       | 0201     |
-| &nbsp;&nbsp;&nbsp;&nbsp; AccountsPayableAndAccruedLiabilitiesCurrent                 | credit     | 3       | 020101   |
-| &nbsp;&nbsp;&nbsp;&nbsp; ko_LoansAndNotesPayable                                     | credit     | 3       | 020102   |
-| &nbsp;&nbsp;&nbsp;&nbsp; LongTermDebtCurrent                                         | credit     | 3       | 020103   |
-| &nbsp;&nbsp;&nbsp;&nbsp; AccruedIncomeTaxesCurrent                                   | credit     | 3       | 020104   |
-| &nbsp;&nbsp;&nbsp;&nbsp; ko_LiabilitiesHeldForSaleAtCarryingValue                    | credit     | 3       | 020105   |
-| &nbsp;&nbsp; LongTermDebtNoncurrent                                                  | credit     | 2       | 0202     |
-| &nbsp;&nbsp; OtherLiabilitiesNoncurrent                                              | credit     | 2       | 0203     |
-| &nbsp;&nbsp; DeferredTaxLiabilitiesNoncurrent                                        | credit     | 2       | 0204     |
-| &nbsp;&nbsp; StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest  | credit     | 2       | 0205     |
-| &nbsp;&nbsp;&nbsp;&nbsp; StockholdersEquity                                          | credit     | 3       | 020501   |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CommonStockValue                                | credit     | 4       | 02050101 |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AdditionalPaidInCapitalCommonStock              | credit     | 4       | 02050102 |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RetainedEarningsAccumulatedDeficit              | credit     | 4       | 02050103 |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AccumulatedOtherComprehensiveIncomeLossNetOfTax | credit     | 4       | 02050104 |
-| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TreasuryStockValue                              | debit      | 4       | 02050105 |
-| &nbsp;&nbsp;&nbsp;&nbsp; MinorityInterest                                            | credit     | 3       | 020502   |
+| Element                                                                              | balance    | id       |
+|:-------------------------------------------------------------------------------------|:-----------|:---------|
+| **Assets**                                                                           | **debit**  | **01**   |
+| &nbsp;&nbsp; AssetsCurrent                                                           | debit      | 0101     |
+| &nbsp;&nbsp;&nbsp;&nbsp; CashCashEquivalentsAndShortTermInvestments                  | debit      | 010101   |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CashAndCashEquivalentsAtCarryingValue           | debit      | 01010101 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OtherShortTermInvestments                       | debit      | 01010102 |
+| &nbsp;&nbsp;&nbsp;&nbsp; MarketableSecuritiesCurrent                                 | debit      | 010102   |
+| &nbsp;&nbsp;&nbsp;&nbsp; AccountsReceivableNetCurrent                                | debit      | 010103   |
+| &nbsp;&nbsp;&nbsp;&nbsp; InventoryNet                                                | debit      | 010104   |
+| &nbsp;&nbsp;&nbsp;&nbsp; PrepaidExpenseAndOtherAssetsCurrent                         | debit      | 010105   |
+| &nbsp;&nbsp;&nbsp;&nbsp; AssetsHeldForSaleCurrent                                    | debit      | 010106   |
+| &nbsp;&nbsp; EquityMethodInvestments                                                 | debit      | 0102     |
+| &nbsp;&nbsp; ko_AvailableForSaleSecuritiesAndCostMethodInvestments                   | debit      | 0103     |
+| &nbsp;&nbsp; OtherAssetsNoncurrent                                                   | debit      | 0104     |
+| &nbsp;&nbsp; PropertyPlantAndEquipmentNet                                            | debit      | 0105     |
+| &nbsp;&nbsp; IndefiniteLivedTrademarks                                               | debit      | 0106     |
+| &nbsp;&nbsp; IndefiniteLivedFranchiseRights                                          | debit      | 0107     |
+| &nbsp;&nbsp; Goodwill                                                                | debit      | 0108     |
+| &nbsp;&nbsp; ko_OtherIndefiniteLivedAndFiniteLivedIntangibleAssets                   | debit      | 0109     |
+| **LiabilitiesAndStockholdersEquity**                                                 | **credit** | **02**   |
+| &nbsp;&nbsp; LiabilitiesCurrent                                                      | credit     | 0201     |
+| &nbsp;&nbsp;&nbsp;&nbsp; AccountsPayableAndAccruedLiabilitiesCurrent                 | credit     | 020101   |
+| &nbsp;&nbsp;&nbsp;&nbsp; ko_LoansAndNotesPayable                                     | credit     | 020102   |
+| &nbsp;&nbsp;&nbsp;&nbsp; LongTermDebtCurrent                                         | credit     | 020103   |
+| &nbsp;&nbsp;&nbsp;&nbsp; AccruedIncomeTaxesCurrent                                   | credit     | 020104   |
+| &nbsp;&nbsp;&nbsp;&nbsp; ko_LiabilitiesHeldForSaleAtCarryingValue                    | credit     | 020105   |
+| &nbsp;&nbsp; LongTermDebtNoncurrent                                                  | credit     | 0202     |
+| &nbsp;&nbsp; OtherLiabilitiesNoncurrent                                              | credit     | 0203     |
+| &nbsp;&nbsp; DeferredTaxLiabilitiesNoncurrent                                        | credit     | 0204     |
+| &nbsp;&nbsp; StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest  | credit     | 0205     |
+| &nbsp;&nbsp;&nbsp;&nbsp; StockholdersEquity                                          | credit     | 020501   |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CommonStockValue                                | credit     | 02050101 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AdditionalPaidInCapitalCommonStock              | credit     | 02050102 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RetainedEarningsAccumulatedDeficit              | credit     | 02050103 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AccumulatedOtherComprehensiveIncomeLossNetOfTax | credit     | 02050104 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TreasuryStockValue                              | debit      | 02050105 |
+| &nbsp;&nbsp;&nbsp;&nbsp; MinorityInterest                                            | credit     | 020502   |
 
 _Notice that TreasuryStockValue element has different balance side than its parent
 element StockholdersEquity. In this case the element value should be deducted instead
@@ -504,8 +504,8 @@ concept._
 ## [finstr](https://github.com/bergant/finstr) package: financial statements in R
 
 [finstr](https://github.com/bergant/finstr) package includes the
-"data wrangling" functions needed to use the XBRL data 
-and allows user to focus on financial statement analysis.
+"data wrangling" functions needed to use the XBRL data.
+It allows user to focus on financial statement analysis.
 
 ## [xbrlus](https://github.com/bergant/xbrlus) package: R interface to XBRL US API
 

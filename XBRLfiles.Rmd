@@ -39,8 +39,8 @@ The `element` table defines _what_ are these values (the XBRL _concepts_, e.g. â
 The `context` table defines the periods and other dimensions for which the values are reported.
 
 With [dplyr](http://cran.r-project.org/web/packages/dplyr)'s `join` and `filter` it is quite easy to explore the data in interrelated tables. 
-For example, to extract revenue from the sale of goods we have to join *facts* (the numbers) with the 
-*contexts* (periods, dimensions):
+For example, to extract revenue from the sale of goods we have to join the 
+*facts* (the numbers) with the *context* (periods, dimensions):
 
 
 ```{r sales, message=FALSE}
@@ -50,7 +50,7 @@ xbrl.vars$fact %>%
   filter(elementId == "us-gaap_SalesRevenueGoodsNet") %>%
   left_join(xbrl.vars$context, by = "contextId") %>%
   filter(is.na(dimension1)) %>%
-  select(startDate, endDate, fact, decimals, unitId, elementId) %>% 
+  select(startDate, endDate, fact, unitId, elementId) %>% 
   (knitr::kable)(format = "markdown")
 
 ```
@@ -272,9 +272,9 @@ elements <-
   )
 
 pandoc.table(
-  elements[, c("Element", "balance", "level", "id")],
+  elements[, c("Element", "balance", "id")],
   style = "rmarkdown",
-  justify = c("left", "left", "left", "left"),
+  justify = c("left", "left", "left"),
   split.table = 300,
   emphasize.strong.rows = which(elements$level == 1)
 )
@@ -290,8 +290,8 @@ concept._
 ## [finstr](https://github.com/bergant/finstr) package: financial statements in R
 
 [finstr](https://github.com/bergant/finstr) package includes the
-"data wrangling" functions needed to use the XBRL data 
-and allows user to focus on financial statement analysis.
+"data wrangling" functions needed to use the XBRL data.
+It allows user to focus on financial statement analysis.
 
 ## [xbrlus](https://github.com/bergant/xbrlus) package: R interface to XBRL US API
 
