@@ -197,6 +197,93 @@ pandoc.table(
 
 ```
 
+## Calculation Hierarchy
+XBRL includes three hierarchies of concepts: definition, presentation and
+calculation. Hierarchies are stored as links in `definition`,
+`presentation` and `calculation` tables. Columns `fromElementId` and 
+`toElementId` represent parent and child. 
+
+Sometimes it is easier to use calculation hierarchy 
+when it is reshaped into elements table with
+explicit hierarchy position:
+
+```{r results='asis'}
+role_id <- "http://www.thecocacolacompany.com/role/ConsolidatedBalanceSheets"
+
+relations <- 
+  xbrl.vars$calculation %>% 
+  filter(roleId == role_id) %>% 
+  select(fromElementId, toElementId, order)
+
+elements <-
+  data.frame( 
+    elementId = with(relations, unique(c(fromElementId, toElementId))),
+    stringsAsFactors = FALSE
+  )  %>%
+  left_join(xbrl.vars$element, by = c("elementId")) %>%
+  left_join(relations, by = c("elementId" = "toElementId")) %>%
+  left_join(xbrl.vars$label, by = c("elementId")) %>%
+  filter(labelRole == "http://www.xbrl.org/2003/role/label") %>% 
+  transmute(elementId, parentId = fromElementId, order, balance, labelString)
+
+# get top element(s) in hierarchy  
+level <- 1
+df1 <- elements %>%
+  filter(is.na(parentId)) %>%
+  mutate(id = "") %>% 
+  arrange(desc(balance))
+
+# search the tree
+while({
+  level_str <- 
+    unname(unlist(lapply(split(df1$id, df1$id), function(x) {
+      sprintf("%s%02d", x, 1:length(x))
+    })))
+  
+  elements[elements$elementId %in% df1$elementId, "level"] <- level
+  to_update <- elements[elements$elementId %in% df1$elementId, "elementId"]
+  elements[ 
+    #order(match(elements$elementId, to_update))[1:length(level_str)], 
+    order(match(elements$elementId, df1$elementId))[1:length(level_str)], 
+    "id"] <- level_str
+  
+  df1 <- elements %>%
+    filter(parentId %in% df1$elementId) %>%
+    arrange(order) %>%
+    select(elementId, parentId) %>%
+    left_join(elements, by=c("parentId"="elementId")) %>%
+    arrange(id)
+  nrow(df1) > 0})
+{
+  level <- level + 1
+}
+
+# order by hierarchy ID and mark terminal nodes 
+elements <- 
+  elements %>%  
+  dplyr::arrange_(~id) %>% 
+  dplyr::mutate( 
+    terminal = !elementId %in% parentId,
+    Element = paste(
+      substring(paste(rep("&nbsp;",10), collapse = ""), 1, (level-1)*2*6),
+      gsub("us-gaap_", "",elementId)
+    )
+  )
+
+pandoc.table(
+  elements[, c("Element", "balance", "level", "id")],
+  style = "rmarkdown",
+  justify = c("left", "left", "left", "left"),
+  split.table = 300,
+  emphasize.strong.rows = which(elements$level == 1)
+)
+```
+
+_Notice that TreasuryStockValue element has different balance side than its parent
+element StockholdersEquity. In this case the element value should be deducted instead
+of added to the total sum, when calculating (or validating) the value of its parent
+concept._
+
 ## Related
 
 ### [finstr](https://github.com/bergant/finstr) package: financial statements in R

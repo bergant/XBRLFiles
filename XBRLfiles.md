@@ -370,6 +370,135 @@ pandoc.table(
 | **TOTAL EQUITY**                                                                                             | **33,440** | **33,168** |
 | **TOTAL LIABILITIES AND EQUITY**                                                                             | **90,055** | **86,174** |
 
+## Calculation Hierarchy
+XBRL includes three hierarchies of concepts: definition, presentation and
+calculation. Hierarchies are stored as links in `definition`,
+`presentation` and `calculation` tables. Columns `fromElementId` and 
+`toElementId` represent parent and child. 
+
+Sometimes it is easier to use calculation hierarchy 
+when it is reshaped into elements table with
+explicit hierarchy position:
+
+
+```r
+role_id <- "http://www.thecocacolacompany.com/role/ConsolidatedBalanceSheets"
+
+relations <- 
+  xbrl.vars$calculation %>% 
+  filter(roleId == role_id) %>% 
+  select(fromElementId, toElementId, order)
+
+elements <-
+  data.frame( 
+    elementId = with(relations, unique(c(fromElementId, toElementId))),
+    stringsAsFactors = FALSE
+  )  %>%
+  left_join(xbrl.vars$element, by = c("elementId")) %>%
+  left_join(relations, by = c("elementId" = "toElementId")) %>%
+  left_join(xbrl.vars$label, by = c("elementId")) %>%
+  filter(labelRole == "http://www.xbrl.org/2003/role/label") %>% 
+  transmute(elementId, parentId = fromElementId, order, balance, labelString)
+
+# get top element(s) in hierarchy  
+level <- 1
+df1 <- elements %>%
+  filter(is.na(parentId)) %>%
+  mutate(id = "") %>% 
+  arrange(desc(balance))
+
+# search the tree
+while({
+  level_str <- 
+    unname(unlist(lapply(split(df1$id, df1$id), function(x) {
+      sprintf("%s%02d", x, 1:length(x))
+    })))
+  
+  elements[elements$elementId %in% df1$elementId, "level"] <- level
+  to_update <- elements[elements$elementId %in% df1$elementId, "elementId"]
+  elements[ 
+    #order(match(elements$elementId, to_update))[1:length(level_str)], 
+    order(match(elements$elementId, df1$elementId))[1:length(level_str)], 
+    "id"] <- level_str
+  
+  df1 <- elements %>%
+    filter(parentId %in% df1$elementId) %>%
+    arrange(order) %>%
+    select(elementId, parentId) %>%
+    left_join(elements, by=c("parentId"="elementId")) %>%
+    arrange(id)
+  nrow(df1) > 0})
+{
+  level <- level + 1
+}
+
+# order by hierarchy ID and mark terminal nodes 
+elements <- 
+  elements %>%  
+  dplyr::arrange_(~id) %>% 
+  dplyr::mutate( 
+    terminal = !elementId %in% parentId,
+    Element = paste(
+      substring(paste(rep("&nbsp;",10), collapse = ""), 1, (level-1)*2*6),
+      gsub("us-gaap_", "",elementId)
+    )
+  )
+
+pandoc.table(
+  elements[, c("Element", "balance", "level", "id")],
+  style = "rmarkdown",
+  justify = c("left", "left", "left", "left"),
+  split.table = 300,
+  emphasize.strong.rows = which(elements$level == 1)
+)
+```
+
+
+
+| Element                                                                              | balance    | level   | id       |
+|:-------------------------------------------------------------------------------------|:-----------|:--------|:---------|
+| **Assets**                                                                           | **debit**  | **1**   | **01**   |
+| &nbsp;&nbsp; AssetsCurrent                                                           | debit      | 2       | 0101     |
+| &nbsp;&nbsp;&nbsp;&nbsp; CashCashEquivalentsAndShortTermInvestments                  | debit      | 3       | 010101   |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CashAndCashEquivalentsAtCarryingValue           | debit      | 4       | 01010101 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; OtherShortTermInvestments                       | debit      | 4       | 01010102 |
+| &nbsp;&nbsp;&nbsp;&nbsp; MarketableSecuritiesCurrent                                 | debit      | 3       | 010102   |
+| &nbsp;&nbsp;&nbsp;&nbsp; AccountsReceivableNetCurrent                                | debit      | 3       | 010103   |
+| &nbsp;&nbsp;&nbsp;&nbsp; InventoryNet                                                | debit      | 3       | 010104   |
+| &nbsp;&nbsp;&nbsp;&nbsp; PrepaidExpenseAndOtherAssetsCurrent                         | debit      | 3       | 010105   |
+| &nbsp;&nbsp;&nbsp;&nbsp; AssetsHeldForSaleCurrent                                    | debit      | 3       | 010106   |
+| &nbsp;&nbsp; EquityMethodInvestments                                                 | debit      | 2       | 0102     |
+| &nbsp;&nbsp; ko_AvailableForSaleSecuritiesAndCostMethodInvestments                   | debit      | 2       | 0103     |
+| &nbsp;&nbsp; OtherAssetsNoncurrent                                                   | debit      | 2       | 0104     |
+| &nbsp;&nbsp; PropertyPlantAndEquipmentNet                                            | debit      | 2       | 0105     |
+| &nbsp;&nbsp; IndefiniteLivedTrademarks                                               | debit      | 2       | 0106     |
+| &nbsp;&nbsp; IndefiniteLivedFranchiseRights                                          | debit      | 2       | 0107     |
+| &nbsp;&nbsp; Goodwill                                                                | debit      | 2       | 0108     |
+| &nbsp;&nbsp; ko_OtherIndefiniteLivedAndFiniteLivedIntangibleAssets                   | debit      | 2       | 0109     |
+| **LiabilitiesAndStockholdersEquity**                                                 | **credit** | **1**   | **02**   |
+| &nbsp;&nbsp; LiabilitiesCurrent                                                      | credit     | 2       | 0201     |
+| &nbsp;&nbsp;&nbsp;&nbsp; AccountsPayableAndAccruedLiabilitiesCurrent                 | credit     | 3       | 020101   |
+| &nbsp;&nbsp;&nbsp;&nbsp; ko_LoansAndNotesPayable                                     | credit     | 3       | 020102   |
+| &nbsp;&nbsp;&nbsp;&nbsp; LongTermDebtCurrent                                         | credit     | 3       | 020103   |
+| &nbsp;&nbsp;&nbsp;&nbsp; AccruedIncomeTaxesCurrent                                   | credit     | 3       | 020104   |
+| &nbsp;&nbsp;&nbsp;&nbsp; ko_LiabilitiesHeldForSaleAtCarryingValue                    | credit     | 3       | 020105   |
+| &nbsp;&nbsp; LongTermDebtNoncurrent                                                  | credit     | 2       | 0202     |
+| &nbsp;&nbsp; OtherLiabilitiesNoncurrent                                              | credit     | 2       | 0203     |
+| &nbsp;&nbsp; DeferredTaxLiabilitiesNoncurrent                                        | credit     | 2       | 0204     |
+| &nbsp;&nbsp; StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest  | credit     | 2       | 0205     |
+| &nbsp;&nbsp;&nbsp;&nbsp; StockholdersEquity                                          | credit     | 3       | 020501   |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CommonStockValue                                | credit     | 4       | 02050101 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AdditionalPaidInCapitalCommonStock              | credit     | 4       | 02050102 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; RetainedEarningsAccumulatedDeficit              | credit     | 4       | 02050103 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AccumulatedOtherComprehensiveIncomeLossNetOfTax | credit     | 4       | 02050104 |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TreasuryStockValue                              | debit      | 4       | 02050105 |
+| &nbsp;&nbsp;&nbsp;&nbsp; MinorityInterest                                            | credit     | 3       | 020502   |
+
+_Notice that TreasuryStockValue element has different balance side than its parent
+element StockholdersEquity. In this case the element value should be deducted instead
+of added to the total sum, when calculating (or validating) the value of its parent
+concept._
+
 ## Related
 
 ### [finstr](https://github.com/bergant/finstr) package: financial statements in R
