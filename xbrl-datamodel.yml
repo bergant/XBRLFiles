@@ -1,3 +1,21 @@
+# Description:
+#   This is a data model diagram file of the data frames structure as retuned 
+#   from XBRL::xbrlDoAll function.To render this file you need DiagrammeR and 
+#   datamodelr package:
+#
+#   library(datamodelr)
+#   dm <- dm_read_yaml("xbrl-datamodel.yml")
+#   g1 <- dm_create_graph(dm)
+#   dm_render_graph(g1)
+#
+# References:
+#   XBRL package: https://cran.r-project.org/web/packages/XBRL
+#   datamodelr package: https://github.com/bergant/datamodelr
+#   DiagrammeR package: https://cran.r-project.org/web/packages/DiagrammeR
+#
+# See rendered image at: 
+#   https://github.com/bergant/XBRLFiles#xbrl-data-frames-structure
+
 # data model segments
 - segment: &relations "XBRL Taxonomy - Relations"
 - segment: &concepts "XBRL Taxonomy - Concepts"
